@@ -11,8 +11,14 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     @Autowired
-    private UserRepo userRepo;
-    @PostMapping
+    private final UserRepo userRepo;
+
+    @Autowired
+    public UserController(UserRepo userRepo) {
+        this.userRepo = userRepo;
+    }
+
+    @PostMapping("/addUser")
     public ResponseEntity addUser(@RequestBody UserEntity user){
         try {
             userRepo.save(user);
@@ -25,9 +31,9 @@ public class UserController {
     @GetMapping("/")
     public ResponseEntity getUsers(){
         try {
-            return ResponseEntity.ok("Good!");
+            return ResponseEntity.ok("User Good!");
         } catch ( Exception e) {
-            return ResponseEntity.badRequest().body("Error!");
+            return ResponseEntity.badRequest().body("User Error!");
         }
     }
 }
