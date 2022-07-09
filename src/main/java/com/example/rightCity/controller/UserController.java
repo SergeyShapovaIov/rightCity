@@ -17,7 +17,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/regestration")
+    @PostMapping("/registration")
     public ResponseEntity addUser(@RequestBody UserEntity user){
         try {
            userService.registration(user);
@@ -33,9 +33,9 @@ public class UserController {
     }
 
     @PutMapping("/updateUsername")
-    public ResponseEntity updateUsernamedUserByID (@RequestParam String username, @RequestParam Long ID){
+    public ResponseEntity updateUsernameUserById(@RequestParam String username, @RequestParam Long ID){
         try{
-            userService.updateUsernameByID(username,ID);
+            userService.updateUsernameById(username,ID);
             return ResponseEntity.ok("Username updated");
         } catch (OldNameMatchesNewName e){
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -45,12 +45,31 @@ public class UserController {
         }
     }
     @PutMapping ("/updatePassword")
-    public ResponseEntity updatePasswordByID(@RequestParam String password, @RequestParam Long ID){
+    public ResponseEntity updatePasswordById(@RequestParam String password, @RequestParam Long ID){
         try{
             userService.updatePasswordByID(password, ID);
             return ResponseEntity.ok("Password updated");
         }catch (Exception e){
             return ResponseEntity.badRequest().body("Error!");
+        }
+    }
+
+    @DeleteMapping("/{ID}")
+    public ResponseEntity deleteUserById(@PathVariable Long ID){
+        try {
+            userService.deleteUserByID(ID);
+            return ResponseEntity.ok("User deleted");
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body("Delete error!");
+        }
+    }
+
+    @GetMapping("/getUserByMail")
+    public ResponseEntity getUserByMail(@RequestParam String mail){
+        try{
+            return null;
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body("Find error!");
         }
     }
 }

@@ -19,10 +19,20 @@ public class ComplainController {
     public ResponseEntity addComplainByID(@RequestBody ComplainEntity complain,
                                       @RequestParam Long userId){
         try {
-            complainService.addComplainByUserID(complain,userId);
+            complainService.addComplainByUserId(complain,userId);
             return ResponseEntity.ok("Complain added");
         } catch ( Exception e) {
             return ResponseEntity.badRequest().body("Error!");
+        }
+    }
+
+    @DeleteMapping("/{ID}")
+    public ResponseEntity deleteComplainById(@PathVariable Long ID){
+        try{
+            complainService.deleteComplainById(ID);
+            return ResponseEntity.ok("Complain added");
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body("Delete error");
         }
     }
 

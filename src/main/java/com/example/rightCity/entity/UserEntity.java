@@ -17,7 +17,7 @@ public class UserEntity {
     @Column(name = "password")
     private String password = "password";
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToMany( mappedBy = "user")
     private List<ComplainEntity> complains;
 
     public UserEntity() {

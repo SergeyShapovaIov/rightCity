@@ -2,25 +2,38 @@ package com.example.rightCity.service;
 
 import com.example.rightCity.entity.ComplainEntity;
 import com.example.rightCity.entity.UserEntity;
-import com.example.rightCity.repository.ComplainRepo;
+import com.example.rightCity.repository.ComplainRepository;
 import com.example.rightCity.repository.UserRepo;
 import org.springframework.stereotype.Service;
+
+import java.util.NoSuchElementException;
 
 @Service
 public class ComplainService {
 
 
-    private final ComplainRepo complainRepo;
+    private final ComplainRepository complainRepository;
     private final UserRepo userRepo;
 
-    public ComplainService(ComplainRepo complainRepo, UserRepo userRepo) {
-        this.complainRepo = complainRepo;
+    public ComplainService(ComplainRepository complainRepository, UserRepo userRepo) {
+        this.complainRepository = complainRepository;
         this.userRepo = userRepo;
     }
 
-    public ComplainEntity addComplainByUserID(ComplainEntity complain, Long userId){
-        UserEntity user = userRepo.findById(userId).get();
+    public ComplainEntity addComplainByUserId(ComplainEntity complain, Long userId){
+        UserEntity user = userRepo
+                .findById(userId)
+                .orElseThrow(NoSuchElementException::new);
+
         complain.setUser(user);
-        return complainRepo.save(complain);
+
+        return complainRepository.save(complain);
+    }
+    public void deleteComplainById(Long id){
+        complainRepository
+                .findById(id)
+                .orElseThrow(NoSuchElementException::new);
+
+        complainRepository.deleteById(id);
     }
 }
