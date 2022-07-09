@@ -18,7 +18,7 @@ public class ComplainService {
         this.userRepo = userRepo;
     }
 
-    public ComplainEntity addComplain(ComplainEntity complain, Long userId){
+    public ComplainEntity addComplainByUserID(ComplainEntity complain, Long userId){
         UserEntity user = userRepo.findById(userId).get();
         complain.setUser(user);
         return complainRepo.save(complain);

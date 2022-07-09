@@ -15,17 +15,16 @@ public class ComplainController {
         this.complainService = complainService;
     }
 
-    @PostMapping("/addComplain")
-    public ResponseEntity addComplain(@RequestBody ComplainEntity complain,
+    @PostMapping("/addComplainByID")
+    public ResponseEntity addComplainByID(@RequestBody ComplainEntity complain,
                                       @RequestParam Long userId){
         try {
-            complainService.addComplain(complain,userId);
+            complainService.addComplainByUserID(complain,userId);
             return ResponseEntity.ok("Complain added");
         } catch ( Exception e) {
             return ResponseEntity.badRequest().body("Error!");
         }
     }
-
 
 }
 
