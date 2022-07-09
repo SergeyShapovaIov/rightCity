@@ -1,8 +1,8 @@
 package com.example.rightCity.controller;
 
 import com.example.rightCity.entity.UserEntity;
-import com.example.rightCity.repository.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.rightCity.exception.UserWithMailAlreadyExistException;
+import com.example.rightCity.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,22 +10,25 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    private final UserRepo userRepo;
+    private final UserService userService;
 
-    @Autowired
-    public UserController(UserRepo userRepo) {
-        this.userRepo = userRepo;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @PostMapping("/addUser")
     public ResponseEntity addUser(@RequestBody UserEntity user){
         try {
-            userRepo.save(user);
-            return ResponseEntity.ok("User added");
-        } catch ( Exception e) {
+           userService.registration(user);
+           return ResponseEntity.ok("User added");
+        }
+        catch (UserWithMailAlreadyExistException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        catch (Exception e){
             return ResponseEntity.badRequest().body("Error!");
         }
+
     }
 
     @GetMapping("/")

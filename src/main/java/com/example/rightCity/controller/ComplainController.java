@@ -1,20 +1,31 @@
 package com.example.rightCity.controller;
 
+import com.example.rightCity.entity.ComplainEntity;
+import com.example.rightCity.service.ComplainService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/complain")
 public class ComplainController {
 
-    @GetMapping("/")
-    public ResponseEntity getUsers(){
+   private final ComplainService complainService;
+
+    public ComplainController(ComplainService complainService) {
+        this.complainService = complainService;
+    }
+
+    @PostMapping("/addComplain")
+    public ResponseEntity addComplain(@RequestBody ComplainEntity complain,
+                                      @RequestParam Long userId){
         try {
-            return ResponseEntity.ok("Complain Good!");
+            complainService.addComplain(complain,userId);
+            return ResponseEntity.ok("Complain added");
         } catch ( Exception e) {
-            return ResponseEntity.badRequest().body("Complain Error!");
+            return ResponseEntity.badRequest().body("Error!");
         }
     }
+
+
 }
+

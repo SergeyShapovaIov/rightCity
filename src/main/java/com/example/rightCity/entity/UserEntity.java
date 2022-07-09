@@ -1,11 +1,11 @@
 package com.example.rightCity.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
 public class UserEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
@@ -17,23 +17,41 @@ public class UserEntity {
     @Column(name = "password")
     private String password = "password";
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private List<ComplainEntity> complains;
 
     public UserEntity() {
     }
 
-    public void setID (Long ID){
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
         this.ID = ID;
     }
 
-    public void setFIO(String fio){
-        this.FIO = fio;
+    public String getFIO() {
+        return FIO;
     }
 
-    public void setMail(String mail){
+    public void setFIO(String FIO) {
+        this.FIO = FIO;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
         this.mail = mail;
     }
 
-    public void setPassword(String password){
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
         this.password = password;
     }
 }
