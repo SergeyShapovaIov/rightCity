@@ -1,7 +1,8 @@
 package com.example.rightCity.service;
 
 import com.example.rightCity.entity.UserEntity;
-import com.example.rightCity.exception.OldNameMatchesNewName;
+import com.example.rightCity.exception.OldNameMatchesNewNameException;
+import com.example.rightCity.exception.UserNotFoundException;
 import com.example.rightCity.exception.UserWithMailAlreadyExistException;
 import com.example.rightCity.repository.UserRepo;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class UserService {
     }
 
 
-    public UserEntity updateUsernameById(String username, Long id) throws OldNameMatchesNewName {
+    public UserEntity updateUsernameById(String username, Long id) throws OldNameMatchesNewNameException {
         UserEntity user = userRepo
                 .findById(id)
                 .orElseThrow(NoSuchElementException::new);
@@ -55,6 +56,17 @@ public class UserService {
         userRepo.deleteById(id);
     }
 
+    public UserEntity getUserByMail(String mail) throws UserNotFoundException {
+        checkFoundByMail(mail);
+        UserEntity user = userRepo.findByMail(mail);
+        return user;
+    }
+
+    private void checkFoundByMail(String mail) throws UserNotFoundException {
+        if(userRepo.findByMail(mail) == null){
+            throw new UserNotFoundException("No user with this email was found");
+        }
+    }
 
 
     private void checkPresent(UserEntity user) throws UserWithMailAlreadyExistException {
@@ -64,9 +76,9 @@ public class UserService {
     }
 
 
-    private void checkMatches(String username, UserEntity user) throws OldNameMatchesNewName {
+    private void checkMatches(String username, UserEntity user) throws OldNameMatchesNewNameException {
         if(Objects.equals(user.getFIO(), username)) {
-            throw new OldNameMatchesNewName("The old name matches the new name");
+            throw new OldNameMatchesNewNameException("The old name matches the new name");
         }
     }
 }

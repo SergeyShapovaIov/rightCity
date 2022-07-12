@@ -1,7 +1,7 @@
 package com.example.rightCity.controller;
 
 import com.example.rightCity.entity.UserEntity;
-import com.example.rightCity.exception.OldNameMatchesNewName;
+import com.example.rightCity.exception.OldNameMatchesNewNameException;
 import com.example.rightCity.exception.UserWithMailAlreadyExistException;
 import com.example.rightCity.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +37,7 @@ public class UserController {
         try{
             userService.updateUsernameById(username,ID);
             return ResponseEntity.ok("Username updated");
-        } catch (OldNameMatchesNewName e){
+        } catch (OldNameMatchesNewNameException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
         catch (Exception e){
@@ -67,7 +67,7 @@ public class UserController {
     @GetMapping("/getUserByMail")
     public ResponseEntity getUserByMail(@RequestParam String mail){
         try{
-            return null;
+            return ResponseEntity.ok(userService.getUserByMail(mail));
         } catch (Exception e){
             return ResponseEntity.badRequest().body("Find error!");
         }
