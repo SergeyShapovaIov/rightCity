@@ -1,6 +1,7 @@
 package com.example.rightCity.service;
 
 import com.example.rightCity.entity.UserEntity;
+import com.example.rightCity.exception.CombinationMailPasswordException;
 import com.example.rightCity.exception.OldNameMatchesNewNameException;
 import com.example.rightCity.exception.UserNotFoundException;
 import com.example.rightCity.exception.UserWithMailAlreadyExistException;
@@ -56,6 +57,13 @@ public class UserService {
         userRepo.deleteById(id);
     }
 
+    public void loginByMailPassword(String mail, String password) throws UserNotFoundException, CombinationMailPasswordException {
+        checkFoundByMail(mail);
+        checkCombinationMailPassword(mail, password);
+    }
+
+
+
     public UserEntity getUserByMail(String mail) throws UserNotFoundException {
         checkFoundByMail(mail);
         UserEntity user = userRepo.findByMail(mail);
@@ -79,6 +87,12 @@ public class UserService {
     private void checkMatches(String username, UserEntity user) throws OldNameMatchesNewNameException {
         if(Objects.equals(user.getFIO(), username)) {
             throw new OldNameMatchesNewNameException("The old name matches the new name");
+        }
+    }
+
+    private void checkCombinationMailPassword (String mail, String password) throws CombinationMailPasswordException {
+        if(!Objects.equals(userRepo.findByMail(mail).getPassword(), password)){
+            throw new CombinationMailPasswordException("Incorrect user/password combination");
         }
     }
 }

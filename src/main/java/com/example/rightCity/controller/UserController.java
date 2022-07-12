@@ -1,7 +1,9 @@
 package com.example.rightCity.controller;
 
 import com.example.rightCity.entity.UserEntity;
+import com.example.rightCity.exception.CombinationMailPasswordException;
 import com.example.rightCity.exception.OldNameMatchesNewNameException;
+import com.example.rightCity.exception.UserNotFoundException;
 import com.example.rightCity.exception.UserWithMailAlreadyExistException;
 import com.example.rightCity.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,21 @@ public class UserController {
             return ResponseEntity.badRequest().body("Error!");
         }
 
+    }
+
+    @PostMapping ("/login")
+    public ResponseEntity loginByMailPassword(@RequestParam String mail,
+                                              @RequestParam String password){
+        try{
+            userService.loginByMailPassword(mail,password);
+            return ResponseEntity.ok("Entry successful");
+        } catch (UserNotFoundException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (CombinationMailPasswordException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body("Service error!");
+        }
     }
 
     @PutMapping("/updateUsername")
