@@ -91,12 +91,11 @@ public class UserRequestService {
      * Send get user by email request string.
      * TODO: test, не ручаюсь за этот кусок кода
      *
-     * @param user User entity key-value as JSONObject
+     * @param email
      * @return the response of request
-     * @throws UnsupportedEncodingException the unsupported encoding exception
      */
-    public String sendGetUserByEmailRequest(JSONObject user) throws UnsupportedEncodingException {
-        HttpGet request = buildGetUserByEmailRequest(user);
+    public String sendGetUserByEmailRequest(String email) {
+        HttpGet request = buildGetUserByEmailRequest(email);
 
         return sendRequest(request);
     }
@@ -179,16 +178,12 @@ public class UserRequestService {
     }
 
 
-    private HttpGet buildGetUserByEmailRequest(JSONObject user) throws UnsupportedEncodingException{
-        return buildGetRequest(user, "users/getUserByMail");
+    private HttpGet buildGetUserByEmailRequest(String email) {
+        return buildGetRequest("users/getUserByMail?email=".concat(email));
     }
 
 
-    private HttpGet buildGetRequest(JSONObject data, String request) throws UnsupportedEncodingException {
-        HttpGet httpGetRequest = new HttpGet(url.concat(request));
-
-        httpGetRequest.addHeader("content-type", "application/json");
-
-        return httpGetRequest;
+    private HttpGet buildGetRequest(String request) {
+        return new HttpGet(url.concat(request));
     }
 }
