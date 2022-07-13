@@ -26,7 +26,7 @@ public class RequestService {
 
     /**
      * Send registration request.
-     *
+     * TODO: test me
      * @param user User entity key-value
      */
     public void sendRegistrationRequest(JSONObject user) {
