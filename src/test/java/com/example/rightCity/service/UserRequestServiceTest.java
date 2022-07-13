@@ -4,12 +4,14 @@ import net.bytebuddy.utility.RandomString;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
+import java.io.UnsupportedEncodingException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserRequestServiceTest {
 
     @Test
-    void sendRegistrationRequest() {
+    void sendRegistrationRequest() throws UnsupportedEncodingException {
         UserRequestService service = new UserRequestService();
         JSONObject testUser = new JSONObject();
 

@@ -60,6 +60,7 @@ public class UserService {
 
     public void loginByMailPassword(String mail, String password) throws UserNotFoundException, CombinationMailPasswordException {
         checkFoundByMail(mail);
+
         checkCombinationMailPassword(mail, password);
     }
 
@@ -67,7 +68,9 @@ public class UserService {
 
     public UserEntity getUserByMail(String mail) throws UserNotFoundException {
         checkFoundByMail(mail);
+
         UserEntity user = userRepo.findByMail(mail);
+
         return user;
     }
 
