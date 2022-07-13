@@ -1,5 +1,7 @@
 package com.example.rightCity.entity;
 
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import javax.persistence.*;
 import java.util.List;
 

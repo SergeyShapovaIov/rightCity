@@ -5,6 +5,7 @@ import com.example.rightCity.exception.OldNameMatchesNewName;
 import com.example.rightCity.exception.UserWithMailAlreadyExistException;
 import com.example.rightCity.repository.UserRepo;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -48,7 +49,7 @@ public class UserService {
     }
 
     public void deleteUserByID(Long id){
-        UserEntity user = userRepo
+        userRepo
                 .findById(id)
                 .orElseThrow(NoSuchElementException::new);
 
@@ -59,7 +60,7 @@ public class UserService {
 
     private void checkPresent(UserEntity user) throws UserWithMailAlreadyExistException {
         if(userRepo.findByMail(user.getMail()) != null){
-            throw new UserWithMailAlreadyExistException("User with this email is already registered");
+            throw new UserWithMailAlreadyExistException("User with this email is already exist!");
         }
     }
 

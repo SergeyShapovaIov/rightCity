@@ -20,13 +20,13 @@ public class UserController {
     @PostMapping("/registration")
     public ResponseEntity addUser(@RequestBody UserEntity user){
         try {
-           userService.registration(user);
-           return ResponseEntity.ok("User added");
-        }
-        catch (UserWithMailAlreadyExistException e) {
+            userService.registration(user);
+            return ResponseEntity.ok("User added");
+        } catch (UserWithMailAlreadyExistException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        }
-        catch (Exception e){
+        } catch (NullPointerException e) {
+            return ResponseEntity.badRequest().body("Empty request!");
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error!");
         }
 
@@ -72,4 +72,11 @@ public class UserController {
             return ResponseEntity.badRequest().body("Find error!");
         }
     }
+
+//    @GetMapping("/getUserModelById")
+//    public ResponseEntity getUserModel(@RequestParam Long Id){
+//        try{
+//            return
+//        }
+//    }
 }
