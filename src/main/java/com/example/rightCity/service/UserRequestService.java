@@ -186,7 +186,6 @@ public class UserRequestService {
 
     private HttpGet buildGetRequest(JSONObject data, String request) throws UnsupportedEncodingException {
         HttpGet httpGetRequest = new HttpGet(url.concat(request));
-        StringEntity params = new StringEntity(data.toString());
 
         httpGetRequest.addHeader("content-type", "application/json");
 
