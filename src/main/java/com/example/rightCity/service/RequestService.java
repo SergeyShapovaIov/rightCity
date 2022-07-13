@@ -1,5 +1,6 @@
 package com.example.rightCity.service;
 
+import com.sun.istack.NotNull;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -40,24 +41,18 @@ public class RequestService {
     }
 
     private void sendRequest(JSONObject user) throws IOException {
+        @NotNull
         HttpClient client = HttpClientBuilder.create().build();
-
-        if (client == null) {
-            throw new RuntimeException("Client creation failed");
-        }
-
         HttpPost request = buildRegistrationRequest(user);
         HttpResponse response = client.execute(request);
+
         saveRegistrationResponse(response);
     }
 
 
     private void saveRegistrationResponse(HttpResponse response) throws IOException {
+        @NotNull
         HttpEntity entity = response.getEntity();
-
-        if (entity == null) {
-            throw new RuntimeException(new NullPointerException());
-        }
 
         registrationResponse = entityToString(entity);
     }
@@ -72,13 +67,18 @@ public class RequestService {
 
 
     private HttpPost buildRegistrationRequest(JSONObject user) throws UnsupportedEncodingException {
-        HttpPost request = new HttpPost(url.concat("users/registration"));
-        StringEntity params = new StringEntity(user.toString());
+        return buildPostRequest(user, "users/registration");
+    }
 
-        request.addHeader("content-type", "application/json");
-        request.setEntity(params);
 
-        return request;
+    private HttpPost buildPostRequest(JSONObject data, String request) throws UnsupportedEncodingException {
+        HttpPost httpPostRequest = new HttpPost(url.concat(request));
+        StringEntity params = new StringEntity(data.toString());
+
+        httpPostRequest.addHeader("content-type", "application/json");
+        httpPostRequest.setEntity(params);
+
+        return httpPostRequest;
     }
 
 
