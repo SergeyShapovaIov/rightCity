@@ -5,6 +5,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -86,6 +87,21 @@ public class UserRequestService {
     }
 
 
+    /**
+     * Send get user by email request string.
+     * TODO: test, не ручаюсь за этот кусок кода
+     *
+     * @param user User entity key-value as JSONObject
+     * @return the response of request
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
+    public String sendGetUserByEmailRequest(JSONObject user) throws UnsupportedEncodingException {
+        HttpGet request = buildGetUserByEmailRequest(user);
+
+        return sendRequest(request);
+    }
+
+
     private String sendRequest(HttpUriRequest request) {
         try {
             @NotNull
@@ -160,5 +176,20 @@ public class UserRequestService {
         httpPutRequest.setEntity(params);
 
         return httpPutRequest;
+    }
+
+
+    private HttpGet buildGetUserByEmailRequest(JSONObject user) throws UnsupportedEncodingException{
+        return buildGetRequest(user, "users/getUserByMail");
+    }
+
+
+    private HttpGet buildGetRequest(JSONObject data, String request) throws UnsupportedEncodingException {
+        HttpGet httpGetRequest = new HttpGet(url.concat(request));
+        StringEntity params = new StringEntity(data.toString());
+
+        httpGetRequest.addHeader("content-type", "application/json");
+
+        return httpGetRequest;
     }
 }
