@@ -6,7 +6,6 @@ plugins {
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
 
 repositories {
 	mavenCentral()
@@ -18,8 +17,8 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
 	implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5'
 	// json java
-	implementation 'org.json:json:20211205'
-    implementation 'junit:junit:4.13.1'
+	implementation 'org.json:json:20220320'
+    implementation 'junit:junit:4.13.2'
 
     runtimeOnly 'mysql:mysql-connector-java'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'

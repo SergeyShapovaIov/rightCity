@@ -2,18 +2,21 @@ package com.example.rightCity.service;
 
 import com.sun.istack.NotNull;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.stream.Collectors;
 
 /**
@@ -64,8 +67,8 @@ public class UserRequestService {
      * @return the response of request
      * @throws UnsupportedEncodingException the unsupported encoding exception
      */
-    public String sendUpdateUsernameRequest(JSONObject user) throws UnsupportedEncodingException {
-        HttpPut request = buildPutUpdateUsernameRequest(user);
+    public String sendUpdateUsernameRequest(Long id, JSONObject user) throws UnsupportedEncodingException {
+        HttpPut request = buildPutUpdateUsernameRequest(id, user);
 
         return sendRequest(request);
     }
@@ -79,8 +82,21 @@ public class UserRequestService {
      * @return the response of request
      * @throws UnsupportedEncodingException the unsupported encoding exception
      */
-    public String sendUpdatePasswordRequest(JSONObject user) throws UnsupportedEncodingException{
-        HttpPut request = buildPutUpdatePasswordRequest(user);
+    public String sendUpdatePasswordRequest(Long id, JSONObject user) throws UnsupportedEncodingException{
+        HttpPut request = buildPutUpdatePasswordRequest(id, user);
+
+        return sendRequest(request);
+    }
+
+
+    /**
+     * Send get user by email request string.
+     * TODO: test, не ручаюсь за этот кусок кода
+     *
+     * @return the response of request
+     */
+    public String sendGetUserByEmailRequest(String email) throws URISyntaxException {
+        HttpGet request = buildGetUserByEmailRequest(email);
 
         return sendRequest(request);
     }
@@ -92,7 +108,7 @@ public class UserRequestService {
             HttpClient client = HttpClientBuilder.create().build();
             HttpResponse response = client.execute(request);
 
-            return registrationResponseToString(response);
+            return responseToString(response);
 
         } catch (HttpHostConnectException | UnsupportedEncodingException ex) {
             ex.printStackTrace();
@@ -104,7 +120,7 @@ public class UserRequestService {
     }
 
 
-    private String registrationResponseToString(HttpResponse response) throws IOException {
+    private String responseToString(HttpResponse response) throws IOException {
         @NotNull
         HttpEntity entity = response.getEntity();
 
@@ -141,13 +157,13 @@ public class UserRequestService {
     }
 
 
-    private HttpPut buildPutUpdateUsernameRequest(JSONObject user) throws UnsupportedEncodingException {
-        return buildPutRequest(user, "users/updateUsername");
+    private HttpPut buildPutUpdateUsernameRequest(Long id, JSONObject user) throws UnsupportedEncodingException {
+        return buildPutRequest(user, "users/updateUsername?ID=".concat(String.valueOf(id)));
     }
 
 
-    private HttpPut buildPutUpdatePasswordRequest(JSONObject user) throws UnsupportedEncodingException {
-        return buildPutRequest(user, "users/updatePassword");
+    private HttpPut buildPutUpdatePasswordRequest(Long id, JSONObject user) throws UnsupportedEncodingException {
+        return buildPutRequest(user, "users/updatePassword?ID=".concat(String.valueOf(id)));
     }
 
 
@@ -160,5 +176,19 @@ public class UserRequestService {
         httpPutRequest.setEntity(params);
 
         return httpPutRequest;
+    }
+
+
+    private HttpGet buildGetUserByEmailRequest(String email) throws URISyntaxException {
+        return buildGetRequest("users/getUserByMail", "mail", email);
+    }
+
+
+    private HttpGet buildGetRequest(String request, String parameter, String value) throws URISyntaxException {
+        URI uri = new URIBuilder(url.concat(request))
+                .addParameter(parameter, value)
+                .build();
+
+        return new HttpGet(uri);
     }
 }

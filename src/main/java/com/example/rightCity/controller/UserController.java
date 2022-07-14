@@ -35,14 +35,13 @@ public class UserController {
     }
 
     @PostMapping ("/login")
-    public ResponseEntity loginByMailPassword(@RequestParam String mail,
-                                              @RequestParam String password){
+    public ResponseEntity loginByMailPassword(@RequestBody UserEntity user) {
         try{
-            userService.loginByMailPassword(mail,password);
+            userService.loginByMailPassword(user);
+
             return ResponseEntity.ok("Entry successful");
-        } catch (UserNotFoundException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (CombinationMailPasswordException e){
+
+        } catch (UserNotFoundException | CombinationMailPasswordException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e){
             return ResponseEntity.badRequest().body("Service error!");
@@ -50,9 +49,9 @@ public class UserController {
     }
 
     @PutMapping("/updateUsername")
-    public ResponseEntity updateUsernameUserById(@RequestParam String username, @RequestParam Long ID){
+    public ResponseEntity updateUsernameUserById(@RequestBody UserEntity user, @RequestParam Long ID){
         try{
-            userService.updateUsernameById(username,ID);
+            userService.updateUsernameById(user.getFIO(), ID);
             return ResponseEntity.ok("Username updated");
         } catch (OldNameMatchesNewNameException e){
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -62,9 +61,9 @@ public class UserController {
         }
     }
     @PutMapping ("/updatePassword")
-    public ResponseEntity updatePasswordById(@RequestParam String password, @RequestParam Long ID){
+    public ResponseEntity updatePasswordById(@RequestBody UserEntity user, @RequestParam Long ID){
         try{
-            userService.updatePasswordByID(password, ID);
+            userService.updatePasswordByID(user.getPassword(), ID);
             return ResponseEntity.ok("Password updated");
         }catch (Exception e){
             return ResponseEntity.badRequest().body("Error!");
@@ -82,7 +81,7 @@ public class UserController {
     }
 
     @GetMapping("/getUserByMail")
-    public ResponseEntity getUserByMail(@RequestParam String mail){
+    public ResponseEntity getUserByMail(@RequestParam String mail) {
         try{
             return ResponseEntity.ok(userService.getUserByMail(mail));
         } catch (Exception e){

@@ -58,10 +58,10 @@ public class UserService {
         userRepo.deleteById(id);
     }
 
-    public void loginByMailPassword(String mail, String password) throws UserNotFoundException, CombinationMailPasswordException {
-        checkFoundByMail(mail);
+    public void loginByMailPassword(UserEntity user) throws UserNotFoundException, CombinationMailPasswordException {
+        checkFoundByMail(user.getMail());
 
-        checkCombinationMailPassword(mail, password);
+        checkCombinationMailPassword(user.getMail(), user.getPassword());
     }
 
 
@@ -69,9 +69,7 @@ public class UserService {
     public UserEntity getUserByMail(String mail) throws UserNotFoundException {
         checkFoundByMail(mail);
 
-        UserEntity user = userRepo.findByMail(mail);
-
-        return user;
+        return userRepo.findByMail(mail);
     }
 
     private void checkFoundByMail(String mail) throws UserNotFoundException {
