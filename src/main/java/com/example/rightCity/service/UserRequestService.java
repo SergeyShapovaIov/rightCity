@@ -2,7 +2,6 @@ package com.example.rightCity.service;
 
 import com.sun.istack.NotNull;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -107,7 +106,7 @@ public class UserRequestService {
             HttpClient client = HttpClientBuilder.create().build();
             HttpResponse response = client.execute(request);
 
-            return registrationResponseToString(response);
+            return responseToString(response);
 
         } catch (HttpHostConnectException | UnsupportedEncodingException ex) {
             ex.printStackTrace();
@@ -119,7 +118,7 @@ public class UserRequestService {
     }
 
 
-    private String registrationResponseToString(HttpResponse response) throws IOException {
+    private String responseToString(HttpResponse response) throws IOException {
         @NotNull
         HttpEntity entity = response.getEntity();
 
