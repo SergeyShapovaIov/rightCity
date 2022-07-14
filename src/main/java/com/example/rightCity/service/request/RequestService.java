@@ -20,8 +20,8 @@ public class RequestService {
     protected final String url = "http://192.168.31.173:8080/";
 
 
-    protected HttpPost buildPostRequest(JSONObject body, String request) throws UnsupportedEncodingException {
-        HttpPost httpPostRequest = new HttpPost(url.concat(request));
+    protected HttpPost buildPostRequest(JSONObject body, URI request) throws UnsupportedEncodingException {
+        HttpPost httpPostRequest = new HttpPost(request);
         StringEntity params = new StringEntity(body.toString());
 
         httpPostRequest.addHeader("content-type", "application/json");
@@ -31,8 +31,20 @@ public class RequestService {
     }
 
 
-    protected HttpPut buildPutRequest(JSONObject body, String request) throws UnsupportedEncodingException {
-        HttpPut httpPutRequest = new HttpPut(url.concat(request));
+
+    protected HttpPost buildPostRequest(JSONObject body, String path) throws UnsupportedEncodingException {
+        HttpPost httpPostRequest = new HttpPost(path);
+        StringEntity params = new StringEntity(body.toString());
+
+        httpPostRequest.addHeader("content-type", "application/json");
+        httpPostRequest.setEntity(params);
+
+        return httpPostRequest;
+    }
+
+
+    protected HttpPut buildPutRequest(JSONObject body, String path) throws UnsupportedEncodingException {
+        HttpPut httpPutRequest = new HttpPut(url.concat(path));
         StringEntity params = new StringEntity(body.toString());
 
         httpPutRequest.addHeader("content-type", "application/json");
@@ -42,8 +54,8 @@ public class RequestService {
     }
 
 
-    protected HttpGet buildGetRequest(String request, String parameter, String value) throws URISyntaxException {
-        URI uri = new URIBuilder(url.concat(request))
+    protected HttpGet buildGetRequest(String path, String parameter, String value) throws URISyntaxException {
+        URI uri = new URIBuilder(url.concat(path))
                 .addParameter(parameter, value)
                 .build();
 
@@ -51,8 +63,8 @@ public class RequestService {
     }
 
 
-    protected HttpDelete buildDeleteRequest(String request, String parameter, String value) throws URISyntaxException {
-        URI uri = new URIBuilder(url.concat(request))
+    protected HttpDelete buildDeleteRequest(String path, String parameter, String value) throws URISyntaxException {
+        URI uri = new URIBuilder(url.concat(path))
                 .addParameter(parameter, value)
                 .build();
 
