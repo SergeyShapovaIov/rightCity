@@ -46,7 +46,6 @@ public class UserRequestService {
 
     /**
      * Send login request string.
-     * TODO: test
      *
      * @param user User entity key-value as JSONObject
      * @return the response of request
@@ -61,11 +60,9 @@ public class UserRequestService {
 
     /**
      * Send update username request string.
-     * TODO: test
      *
      * @param user User entity key-value as JSONObject
      * @return the response of request
-     * @throws UnsupportedEncodingException the unsupported encoding exception
      */
     public String sendUpdateUsernameRequest(Long id, JSONObject user) throws UnsupportedEncodingException {
         HttpPut request = buildPutUpdateUsernameRequest(id, user);
@@ -76,11 +73,8 @@ public class UserRequestService {
 
     /**
      * Send update password request string.
-     * TODO: test
      *
-     * @param user User entity key-value as JSONObject
      * @return the response of request
-     * @throws UnsupportedEncodingException the unsupported encoding exception
      */
     public String sendUpdatePasswordRequest(Long id, JSONObject user) throws UnsupportedEncodingException{
         HttpPut request = buildPutUpdatePasswordRequest(id, user);
@@ -91,7 +85,6 @@ public class UserRequestService {
 
     /**
      * Send get user by email request string.
-     * TODO: test, не ручаюсь за этот кусок кода
      *
      * @return the response of request
      */
