@@ -1,5 +1,6 @@
 package com.example.rightCity.service;
 
+import com.example.rightCity.service.request.UserRequestService;
 import net.bytebuddy.utility.RandomString;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;

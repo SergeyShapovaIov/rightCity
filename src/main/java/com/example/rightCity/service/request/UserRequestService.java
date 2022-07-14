@@ -1,28 +1,15 @@
-package com.example.rightCity.service;
+package com.example.rightCity.service.request;
 
-import com.sun.istack.NotNull;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.client.methods.*;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.stream.Collectors;
 
 /**
  * The type Request service.
  */
-public class UserRequestService {
+public class UserRequestService extends RequestService{
     /**
      * if you're hosting api on a local machine you should set address like
      * 192.168.**.**:port
@@ -95,37 +82,15 @@ public class UserRequestService {
     }
 
 
-    private String sendRequest(HttpUriRequest request) {
-        try {
-            @NotNull
-            HttpClient client = HttpClientBuilder.create().build();
-            HttpResponse response = client.execute(request);
+    /**
+     * Send delete user by id request string.
+     *
+     * @return the response of request
+     */
+    public String sendDeleteUserByIdRequest(Long id) throws URISyntaxException {
+        HttpDelete request = buildDeleteUserByIdRequest(id);
 
-            return responseToString(response);
-
-        } catch (HttpHostConnectException | UnsupportedEncodingException ex) {
-            ex.printStackTrace();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return null;
-    }
-
-
-    private String responseToString(HttpResponse response) throws IOException {
-        @NotNull
-        HttpEntity entity = response.getEntity();
-
-        return entityToString(entity);
-    }
-
-
-    private String entityToString(HttpEntity entity) throws IOException {
-        try(InputStream inputStream = entity.getContent()) {
-            return new BufferedReader(new InputStreamReader(inputStream))
-                    .lines().collect(Collectors.joining("\n"));
-        }
+        return sendRequest(request);
     }
 
 
@@ -139,17 +104,6 @@ public class UserRequestService {
     }
 
 
-    private HttpPost buildPostRequest(JSONObject data, String request) throws UnsupportedEncodingException {
-        HttpPost httpPostRequest = new HttpPost(url.concat(request));
-        StringEntity params = new StringEntity(data.toString());
-
-        httpPostRequest.addHeader("content-type", "application/json");
-        httpPostRequest.setEntity(params);
-
-        return httpPostRequest;
-    }
-
-
     private HttpPut buildPutUpdateUsernameRequest(Long id, JSONObject user) throws UnsupportedEncodingException {
         return buildPutRequest(user, "users/updateUsername?ID=".concat(String.valueOf(id)));
     }
@@ -160,28 +114,12 @@ public class UserRequestService {
     }
 
 
-
-    private HttpPut buildPutRequest(JSONObject data, String request) throws UnsupportedEncodingException {
-        HttpPut httpPutRequest = new HttpPut(url.concat(request));
-        StringEntity params = new StringEntity(data.toString());
-
-        httpPutRequest.addHeader("content-type", "application/json");
-        httpPutRequest.setEntity(params);
-
-        return httpPutRequest;
-    }
-
-
     private HttpGet buildGetUserByEmailRequest(String email) throws URISyntaxException {
         return buildGetRequest("users/getUserByMail", "mail", email);
     }
 
 
-    private HttpGet buildGetRequest(String request, String parameter, String value) throws URISyntaxException {
-        URI uri = new URIBuilder(url.concat(request))
-                .addParameter(parameter, value)
-                .build();
-
-        return new HttpGet(uri);
+    private HttpDelete buildDeleteUserByIdRequest(Long id) throws URISyntaxException {
+        return buildDeleteRequest("users/", "ID", String.valueOf(id));
     }
 }
