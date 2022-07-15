@@ -28,7 +28,7 @@ public class ComplaintRequestService extends RequestService {
      * @return response as string
      */
     public String sendGetComplainById(Long complainId) throws URISyntaxException {
-        HttpGet request = buildGetRequest("complain/getComplainByID", "ID", String.valueOf(complainId));
+        HttpGet request = buildGetRequest("complain/getComplainByID/", "ID", String.valueOf(complainId));
 
         return sendRequest(request);
     }
