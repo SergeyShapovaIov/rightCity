@@ -5,6 +5,8 @@ import com.example.rightCity.service.ComplainService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.NoSuchElementException;
+
 @RestController
 @RequestMapping("/complain")
 public class ComplainController {
@@ -25,6 +27,19 @@ public class ComplainController {
             return ResponseEntity.badRequest().body("Error!");
         }
     }
+
+
+    @GetMapping("/getComplainByID/{ID}")
+    public ResponseEntity getComplainById(@PathVariable long ID) {
+        try {
+            return ResponseEntity.ok(complainService.getComplainById(ID));
+        } catch (NoSuchElementException exception) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
+    }
+
 
     @DeleteMapping("/{ID}")
     public ResponseEntity deleteComplainById(@PathVariable Long ID){

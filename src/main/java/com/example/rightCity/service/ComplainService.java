@@ -20,6 +20,7 @@ public class ComplainService {
         this.userRepo = userRepo;
     }
 
+
     public ComplainEntity addComplainByUserId(ComplainEntity complain, Long userId){
         UserEntity user = userRepo
                 .findById(userId)
@@ -29,6 +30,15 @@ public class ComplainService {
 
         return complainRepository.save(complain);
     }
+
+
+    public ComplainEntity getComplainById(Long id) {
+        return complainRepository
+                .findById(id)
+                .orElseThrow(NoSuchElementException::new);
+    }
+
+
     public void deleteComplainById(Long id){
         complainRepository
                 .findById(id)
