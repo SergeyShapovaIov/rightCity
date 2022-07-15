@@ -20,6 +20,18 @@ public class RequestService {
     protected final String url = "http://192.168.31.173:8080/";
 
 
+    protected HttpPost buildPostRequest(JSONObject body, URI request) throws UnsupportedEncodingException {
+        HttpPost httpPostRequest = new HttpPost(request);
+        StringEntity params = new StringEntity(body.toString());
+
+        httpPostRequest.addHeader("content-type", "application/json");
+        httpPostRequest.setEntity(params);
+
+        return httpPostRequest;
+    }
+
+
+
     protected HttpPost buildPostRequest(JSONObject body, String path) throws UnsupportedEncodingException {
         HttpPost httpPostRequest = new HttpPost(path);
         StringEntity params = new StringEntity(body.toString());
