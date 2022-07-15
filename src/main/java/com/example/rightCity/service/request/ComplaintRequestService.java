@@ -1,5 +1,6 @@
 package com.example.rightCity.service.request;
 
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
@@ -17,6 +18,17 @@ public class ComplaintRequestService extends RequestService {
      */
     public String sendAddComplaintByUserId(Long userId, JSONObject complaint) throws UnsupportedEncodingException, URISyntaxException {
         HttpPost request = buildPostAddComplaintByUserIdRequest(userId, complaint);
+
+        return sendRequest(request);
+    }
+
+
+    /**
+     *
+     * @return response as string
+     */
+    public String sendGetComplainById(Long complainId) throws URISyntaxException {
+        HttpGet request = buildGetRequest("complain/getComplainByID", "ID", String.valueOf(complainId));
 
         return sendRequest(request);
     }
