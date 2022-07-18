@@ -2,13 +2,17 @@ package com.example.rightCity.service.request;
 
 import net.bytebuddy.utility.RandomString;
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class UserRequestServiceTest {
 
@@ -69,6 +73,8 @@ class UserRequestServiceTest {
         UserRequestService service = new UserRequestService();
 
         HttpResponse response = service.sendGetUserByEmailRequestAndGetResponse("ADatSQ4T@gmail.com");
+        StatusLine statusLine = mock(response.getStatusLine().getClass());
+        when(statusLine.getStatusCode()).thenReturn(200);
     }
 
     @Test
