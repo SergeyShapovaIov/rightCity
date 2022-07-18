@@ -1,5 +1,6 @@
 package com.example.rightCity.service.request;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.*;
 import org.json.JSONObject;
 
@@ -70,10 +71,17 @@ public class UserRequestService extends RequestService {
      *
      * @return the response of request
      */
-    public String sendGetUserByEmailRequest(String email) throws URISyntaxException {
+    public String sendGetUserByEmailRequestAndGetResponseAsString(String email) throws URISyntaxException {
         HttpGet request = buildGetUserByEmailRequest(email);
 
         return getResponseFromRequestAsString(request);
+    }
+
+
+    public HttpResponse sendGetUserByEmailRequestAndGetResponse(String email) throws URISyntaxException {
+        HttpGet request = buildGetUserByEmailRequest(email);
+
+        return getResponseFromRequest(request);
     }
 
 

@@ -1,7 +1,7 @@
 package com.example.rightCity.service.request;
 
 import net.bytebuddy.utility.RandomString;
-import org.apache.http.auth.AuthenticationException;
+import org.apache.http.HttpResponse;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
@@ -68,19 +68,7 @@ class UserRequestServiceTest {
     void sendGetUserByEmailRequest() throws URISyntaxException {
         UserRequestService service = new UserRequestService();
 
-        String response = service.sendGetUserByEmailRequest("ADatSQ4T@gmail.com");
-
-        JSONObject expected = new JSONObject();
-
-        expected.put("fio", "hlGZdsYfFIO");
-        expected.put("mail", "ADatSQ4T@gmail.com");
-        expected.put("id", 24);
-        expected.put("complains", "[]");
-        expected.put("password", "JUHSWAk6PASSWORD");
-
-        JSONObject actual = new JSONObject(response);
-
-        assertEquals(expected.toString(), actual.toString());
+        HttpResponse response = service.sendGetUserByEmailRequestAndGetResponse("ADatSQ4T@gmail.com");
     }
 
     @Test
