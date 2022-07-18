@@ -1,7 +1,7 @@
-package com.example.rightCity.service;
+package com.example.rightCity.service.request;
 
-import com.example.rightCity.service.request.UserRequestService;
 import net.bytebuddy.utility.RandomString;
+import org.apache.http.auth.AuthenticationException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserRequestServiceTest {
 
     @Test
-    void sendRegistrationRequest() throws UnsupportedEncodingException {
+    void sendRegistrationRequest()
+            throws UnsupportedEncodingException, URISyntaxException {
         UserRequestService service = new UserRequestService();
         JSONObject testUser = new JSONObject();
 
@@ -27,7 +28,7 @@ class UserRequestServiceTest {
     }
 
     @Test
-    void sendLoginRequest() throws UnsupportedEncodingException {
+    void sendLoginRequest() throws UnsupportedEncodingException, URISyntaxException {
         UserRequestService service = new UserRequestService();
         JSONObject testUser = new JSONObject();
 
@@ -74,10 +75,15 @@ class UserRequestServiceTest {
         expected.put("fio", "hlGZdsYfFIO");
         expected.put("mail", "ADatSQ4T@gmail.com");
         expected.put("id", 24);
+        expected.put("complains", "[]");
         expected.put("password", "JUHSWAk6PASSWORD");
 
         JSONObject actual = new JSONObject(response);
 
         assertEquals(expected.toString(), actual.toString());
+    }
+
+    @Test
+    void sendDeleteUserByIdRequest() {
     }
 }

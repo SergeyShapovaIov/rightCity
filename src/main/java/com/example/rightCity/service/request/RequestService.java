@@ -6,7 +6,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONObject;
@@ -17,10 +16,16 @@ import java.net.URISyntaxException;
 import java.util.stream.Collectors;
 
 public class RequestService {
-    protected final String url = "http://192.168.31.173:8080/";
+    /**
+     * if you're hosting api on a local machine you should set address like
+     * 192.168.**.**:port
+     */
+    protected final String url = "http://192.168.1.234:8080/";
 
 
-    protected HttpPost buildPostRequest(JSONObject body, URI request) throws UnsupportedEncodingException {
+    protected HttpPost buildPostRequest(@NotNull JSONObject body, @NotNull URI request)
+            throws UnsupportedEncodingException {
+
         HttpPost httpPostRequest = new HttpPost(request);
         StringEntity params = new StringEntity(body.toString());
 
@@ -32,29 +37,39 @@ public class RequestService {
 
 
 
-    protected HttpPost buildPostRequest(JSONObject body, String path) throws UnsupportedEncodingException {
-        HttpPost httpPostRequest = new HttpPost(path);
+    protected HttpPost buildPostRequest(@NotNull JSONObject body, @NotNull String path)
+            throws UnsupportedEncodingException, URISyntaxException {
+
+        URI uri = new URIBuilder()
+                .setPath(url.concat(path))
+                .build();
+
+        HttpPost postRequest = new HttpPost(uri);
         StringEntity params = new StringEntity(body.toString());
 
-        httpPostRequest.addHeader("content-type", "application/json");
-        httpPostRequest.setEntity(params);
+        postRequest.addHeader("content-type", "application/json");
+        postRequest.setEntity(params);
 
-        return httpPostRequest;
+        return postRequest;
     }
 
 
-    protected HttpPut buildPutRequest(JSONObject body, String path) throws UnsupportedEncodingException {
-        HttpPut httpPutRequest = new HttpPut(url.concat(path));
+    protected HttpPut buildPutRequest(@NotNull JSONObject body, @NotNull String path)
+            throws UnsupportedEncodingException {
+
+        HttpPut putRequest = new HttpPut(url.concat(path));
         StringEntity params = new StringEntity(body.toString());
 
-        httpPutRequest.addHeader("content-type", "application/json");
-        httpPutRequest.setEntity(params);
+        putRequest.addHeader("content-type", "application/json");
+        putRequest.setEntity(params);
 
-        return httpPutRequest;
+        return putRequest;
     }
 
 
-    protected HttpGet buildGetRequest(String path, String parameter, String value) throws URISyntaxException {
+    protected HttpGet buildGetRequest(@NotNull String path, @NotNull String parameter, @NotNull String value)
+            throws URISyntaxException {
+
         URI uri = new URIBuilder(url.concat(path))
                 .addParameter(parameter, value)
                 .build();
@@ -63,7 +78,9 @@ public class RequestService {
     }
 
 
-    protected HttpDelete buildDeleteRequest(String path, String parameter, String value) throws URISyntaxException {
+    protected HttpDelete buildDeleteRequest(@NotNull String path, @NotNull String parameter, @NotNull String value)
+            throws URISyntaxException {
+
         URI uri = new URIBuilder(url.concat(path))
                 .addParameter(parameter, value)
                 .build();
@@ -72,25 +89,27 @@ public class RequestService {
     }
 
 
-    protected String sendRequest(HttpUriRequest request) {
+    protected String getResponseFromRequestAsString(@NotNull HttpUriRequest request) {
+        return responseToString(getResponseFromRequest(request));
+    }
+
+
+    protected HttpResponse getResponseFromRequest(@NotNull HttpUriRequest request) {
         try {
             @NotNull
             HttpClient client = HttpClientBuilder.create().build();
-            HttpResponse response = client.execute(request);
 
-            return responseToString(response);
+            return client.execute(request);
 
-        } catch (HttpHostConnectException | UnsupportedEncodingException ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
 
         return null;
     }
 
 
-    protected String responseToString(HttpResponse response) throws IOException {
+    protected String responseToString(HttpResponse response) {
         @NotNull
         HttpEntity entity = response.getEntity();
 
@@ -98,10 +117,16 @@ public class RequestService {
     }
 
 
-    protected String entityToString(HttpEntity entity) throws IOException {
+    protected String entityToString(HttpEntity entity) {
         try(InputStream inputStream = entity.getContent()) {
+
             return new BufferedReader(new InputStreamReader(inputStream))
                     .lines().collect(Collectors.joining("\n"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        return entity.toString();
     }
 }

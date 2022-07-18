@@ -1,15 +1,13 @@
 package com.example.rightCity.service;
 
 import com.example.rightCity.entity.UserEntity;
-import com.example.rightCity.exception.CombinationMailPasswordException;
-import com.example.rightCity.exception.OldNameMatchesNewNameException;
-import com.example.rightCity.exception.UserNotFoundException;
-import com.example.rightCity.exception.UserWithMailAlreadyExistException;
+import com.example.rightCity.exception.user.CombinationMailPasswordException;
+import com.example.rightCity.exception.user.OldNameMatchesNewOneException;
+import com.example.rightCity.exception.user.UserNotFoundException;
+import com.example.rightCity.exception.user.UserWithMailAlreadyExistException;
 import com.example.rightCity.repository.UserRepo;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Service
@@ -27,10 +25,10 @@ public class UserService {
     }
 
 
-    public UserEntity updateUsernameById(String username, Long id) throws OldNameMatchesNewNameException {
+    public UserEntity updateUsernameById(String username, Long id) throws OldNameMatchesNewOneException {
         UserEntity user = userRepo
                 .findById(id)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         checkMatches(username, user);
 
@@ -40,30 +38,30 @@ public class UserService {
     }
 
 
-    public UserEntity updatePasswordByID (String password, Long id) {
+    public UserEntity updatePasswordById(String password, Long id) {
         UserEntity user = userRepo
                 .findById(id)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         user.setPassword(password);
 
         return userRepo.save(user);
     }
 
-    public void deleteUserByID(Long id){
+    public void deleteUserById(Long id){
         userRepo
                 .findById(id)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         userRepo.deleteById(id);
     }
 
-    public void loginByMailPassword(UserEntity user) throws UserNotFoundException, CombinationMailPasswordException {
+    public void loginByMailPassword(UserEntity user)
+            throws UserNotFoundException, CombinationMailPasswordException {
         checkFoundByMail(user.getMail());
 
-        checkCombinationMailPassword(user.getMail(), user.getPassword());
+        checkPassword(user.getMail(), user.getPassword());
     }
-
 
 
     public UserEntity getUserByMail(String mail) throws UserNotFoundException {
@@ -72,29 +70,31 @@ public class UserService {
         return userRepo.findByMail(mail);
     }
 
+
     private void checkFoundByMail(String mail) throws UserNotFoundException {
-        if(userRepo.findByMail(mail) == null){
-            throw new UserNotFoundException("No user with this email was found");
+        if(Objects.equals(userRepo.findByMail(mail), null)) {
+            throw new UserNotFoundException();
         }
     }
 
 
     private void checkPresent(UserEntity user) throws UserWithMailAlreadyExistException {
-        if(userRepo.findByMail(user.getMail()) != null){
-            throw new UserWithMailAlreadyExistException("User with this email is already exist!");
+        if(!Objects.equals(userRepo.findByMail(user.getMail()), null)) {
+            throw new UserWithMailAlreadyExistException();
         }
     }
 
 
-    private void checkMatches(String username, UserEntity user) throws OldNameMatchesNewNameException {
+    private void checkMatches(String username, UserEntity user) throws OldNameMatchesNewOneException {
         if(Objects.equals(user.getFIO(), username)) {
-            throw new OldNameMatchesNewNameException("The old name matches the new name");
+            throw new OldNameMatchesNewOneException();
         }
     }
 
-    private void checkCombinationMailPassword (String mail, String password) throws CombinationMailPasswordException {
-        if(!Objects.equals(userRepo.findByMail(mail).getPassword(), password)){
-            throw new CombinationMailPasswordException("Incorrect user/password combination");
+
+    private void checkPassword(String mail, String password) throws CombinationMailPasswordException {
+        if(!Objects.equals(userRepo.findByMail(mail).getPassword(), password)) {
+            throw new CombinationMailPasswordException();
         }
     }
 }

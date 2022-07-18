@@ -2,18 +2,18 @@ package com.example.rightCity.service;
 
 import com.example.rightCity.entity.ComplainEntity;
 import com.example.rightCity.entity.UserEntity;
+import com.example.rightCity.exception.complain.ComplainNotFoundException;
+import com.example.rightCity.exception.user.UserNotFoundException;
 import com.example.rightCity.repository.ComplainRepository;
 import com.example.rightCity.repository.UserRepo;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
 
 @Service
 public class ComplainService {
-
-
     private final ComplainRepository complainRepository;
     private final UserRepo userRepo;
+
 
     public ComplainService(ComplainRepository complainRepository, UserRepo userRepo) {
         this.complainRepository = complainRepository;
@@ -21,10 +21,10 @@ public class ComplainService {
     }
 
 
-    public ComplainEntity addComplainByUserId(ComplainEntity complain, Long userId){
+    public ComplainEntity addComplainByUserId(ComplainEntity complain, Long userId) {
         UserEntity user = userRepo
                 .findById(userId)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         complain.setUser(user);
 
@@ -35,14 +35,14 @@ public class ComplainService {
     public ComplainEntity getComplainById(Long id) {
         return complainRepository
                 .findById(id)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(ComplainNotFoundException::new);
     }
 
 
     public void deleteComplainById(Long id){
         complainRepository
                 .findById(id)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(ComplainNotFoundException::new);
 
         complainRepository.deleteById(id);
     }

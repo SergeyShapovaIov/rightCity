@@ -9,14 +9,7 @@ import java.net.URISyntaxException;
 /**
  * The type Request service.
  */
-public class UserRequestService extends RequestService{
-    /**
-     * if you're hosting api on a local machine you should set address like
-     * 192.168.**.**:port
-     */
-    private final String url = "http://192.168.31.173:8080/";
-
-
+public class UserRequestService extends RequestService {
     /**
      * Send registration request.
      *
@@ -24,10 +17,11 @@ public class UserRequestService extends RequestService{
      * @return the response of request
      * @throws UnsupportedEncodingException the unsupported encoding exception
      */
-    public String sendRegistrationRequest(JSONObject user) throws UnsupportedEncodingException {
+    public String sendRegistrationRequest(JSONObject user)
+            throws UnsupportedEncodingException, URISyntaxException {
         HttpPost request = buildPostRegistrationRequest(user);
 
-        return sendRequest(request);
+        return getResponseFromRequestAsString(request);
     }
 
 
@@ -38,10 +32,11 @@ public class UserRequestService extends RequestService{
      * @return the response of request
      * @throws UnsupportedEncodingException the unsupported encoding exception
      */
-    public String sendLoginRequest(JSONObject user) throws UnsupportedEncodingException {
+    public String sendLoginRequest(JSONObject user)
+            throws UnsupportedEncodingException, URISyntaxException {
         HttpPost request = buildPostLoginRequest(user);
 
-        return sendRequest(request);
+        return getResponseFromRequestAsString(request);
     }
 
 
@@ -54,7 +49,7 @@ public class UserRequestService extends RequestService{
     public String sendUpdateUsernameRequest(Long id, JSONObject user) throws UnsupportedEncodingException {
         HttpPut request = buildPutUpdateUsernameRequest(id, user);
 
-        return sendRequest(request);
+        return getResponseFromRequestAsString(request);
     }
 
 
@@ -66,7 +61,7 @@ public class UserRequestService extends RequestService{
     public String sendUpdatePasswordRequest(Long id, JSONObject user) throws UnsupportedEncodingException{
         HttpPut request = buildPutUpdatePasswordRequest(id, user);
 
-        return sendRequest(request);
+        return getResponseFromRequestAsString(request);
     }
 
 
@@ -78,7 +73,7 @@ public class UserRequestService extends RequestService{
     public String sendGetUserByEmailRequest(String email) throws URISyntaxException {
         HttpGet request = buildGetUserByEmailRequest(email);
 
-        return sendRequest(request);
+        return getResponseFromRequestAsString(request);
     }
 
 
@@ -90,16 +85,18 @@ public class UserRequestService extends RequestService{
     public String sendDeleteUserByIdRequest(Long id) throws URISyntaxException {
         HttpDelete request = buildDeleteUserByIdRequest(id);
 
-        return sendRequest(request);
+        return getResponseFromRequestAsString(request);
     }
 
 
-    private HttpPost buildPostRegistrationRequest(JSONObject user) throws UnsupportedEncodingException {
+    private HttpPost buildPostRegistrationRequest(JSONObject user)
+            throws UnsupportedEncodingException, URISyntaxException {
         return buildPostRequest(user, "users/registration");
     }
 
 
-    private HttpPost buildPostLoginRequest(JSONObject user) throws UnsupportedEncodingException {
+    private HttpPost buildPostLoginRequest(JSONObject user)
+            throws UnsupportedEncodingException, URISyntaxException {
         return buildPostRequest(user, "users/login");
     }
 

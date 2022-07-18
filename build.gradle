@@ -20,6 +20,12 @@ dependencies {
 	implementation 'org.json:json:20220320'
     implementation 'junit:junit:4.13.2'
 
+	compileOnly 'org.projectlombok:lombok:1.18.24'
+	annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+	testCompileOnly 'org.projectlombok:lombok:1.18.24'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+
     runtimeOnly 'mysql:mysql-connector-java'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

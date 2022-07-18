@@ -18,13 +18,24 @@ public class ComplainController {
     }
 
     @PostMapping("/addComplainByID")
-    public ResponseEntity addComplainByID(@RequestBody ComplainEntity complain,
-                                      @RequestParam Long userId){
+    public ResponseEntity addComplainByUserID(@RequestBody ComplainEntity complain,
+                                              @RequestParam Long userId){
         try {
-            complainService.addComplainByUserId(complain,userId);
+            complainService.addComplainByUserId(complain, userId);
             return ResponseEntity.ok("Complain added");
         } catch ( Exception e) {
             return ResponseEntity.badRequest().body("Error!");
+        }
+    }
+
+
+    @DeleteMapping("/{ID}")
+    public ResponseEntity deleteComplainById(@PathVariable Long ID){
+        try{
+            complainService.deleteComplainById(ID);
+            return ResponseEntity.ok("Complain deleted");
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body("Delete error");
         }
     }
 
@@ -39,17 +50,5 @@ public class ComplainController {
             return ResponseEntity.badRequest().body(exception.getMessage());
         }
     }
-
-
-    @DeleteMapping("/{ID}")
-    public ResponseEntity deleteComplainById(@PathVariable Long ID){
-        try{
-            complainService.deleteComplainById(ID);
-            return ResponseEntity.ok("Complain added");
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body("Delete error");
-        }
-    }
-
 }
 

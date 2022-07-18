@@ -10,16 +10,17 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class ComplaintRequestService extends RequestService {
-
     /**
      * TODO: test
      *
      * @return response
      */
-    public String sendAddComplaintByUserId(Long userId, JSONObject complaint) throws UnsupportedEncodingException, URISyntaxException {
+    public String sendAddComplaintByUserId(Long userId, JSONObject complaint)
+            throws UnsupportedEncodingException, URISyntaxException {
+
         HttpPost request = buildPostAddComplaintByUserIdRequest(userId, complaint);
 
-        return sendRequest(request);
+        return getResponseFromRequestAsString(request);
     }
 
 
@@ -30,7 +31,7 @@ public class ComplaintRequestService extends RequestService {
     public String sendGetComplainById(Long complainId) throws URISyntaxException {
         HttpGet request = buildGetRequest("complain/getComplainByID/", "ID", String.valueOf(complainId));
 
-        return sendRequest(request);
+        return getResponseFromRequestAsString(request);
     }
 
 
