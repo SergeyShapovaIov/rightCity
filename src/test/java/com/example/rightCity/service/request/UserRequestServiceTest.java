@@ -75,6 +75,8 @@ class UserRequestServiceTest {
         HttpResponse response = service.sendGetUserByEmailRequestAndGetResponse("ADatSQ4T@gmail.com");
         StatusLine statusLine = mock(response.getStatusLine().getClass());
         when(statusLine.getStatusCode()).thenReturn(200);
+
+        assertEquals(200, statusLine.getStatusCode());
     }
 
     @Test
