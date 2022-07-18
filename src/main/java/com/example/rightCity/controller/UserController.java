@@ -6,6 +6,7 @@ import com.example.rightCity.exception.user.OldNameMatchesNewOneException;
 import com.example.rightCity.exception.user.UserNotFoundException;
 import com.example.rightCity.exception.user.UserWithMailAlreadyExistException;
 import com.example.rightCity.service.UserService;
+import lombok.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ public class UserController {
 
 
     @PostMapping("/registration")
-    public ResponseEntity addUser(@RequestBody UserEntity user){
+    public ResponseEntity addUser(@RequestBody @NonNull UserEntity user){
         try {
             userService.registration(user);
 
@@ -39,7 +40,7 @@ public class UserController {
 
 
     @PostMapping ("/login")
-    public ResponseEntity loginByMailPassword(@RequestBody UserEntity user) {
+    public ResponseEntity loginByMailPassword(@RequestBody @NonNull UserEntity user) {
         try{
             userService.loginByMailPassword(user);
 
@@ -54,7 +55,8 @@ public class UserController {
 
 
     @PutMapping("/updateUsername")
-    public ResponseEntity updateUsernameUserById(@RequestBody UserEntity user, @RequestParam Long ID){
+    public ResponseEntity updateUsernameUserById(@RequestBody @NonNull UserEntity user,
+                                                 @RequestParam @NonNull Long ID) {
         try{
             userService.updateUsernameById(user.getFIO(), ID);
 
@@ -70,7 +72,8 @@ public class UserController {
 
 
     @PutMapping ("/updatePassword")
-    public ResponseEntity updatePasswordById(@RequestBody UserEntity user, @RequestParam Long ID){
+    public ResponseEntity updatePasswordById(@RequestBody @NonNull UserEntity user,
+                                             @RequestParam @NonNull Long ID) {
         try{
             userService.updatePasswordById(user.getPassword(), ID);
 
@@ -83,7 +86,7 @@ public class UserController {
 
 
     @DeleteMapping("/{ID}")
-    public ResponseEntity deleteUserById(@PathVariable Long ID){
+    public ResponseEntity deleteUserById(@PathVariable @NonNull Long ID) {
         try {
             userService.deleteUserById(ID);
 
@@ -96,7 +99,7 @@ public class UserController {
 
 
     @GetMapping("/getUserByMail")
-    public ResponseEntity getUserByMail(@RequestParam String mail) {
+    public ResponseEntity getUserByMail(@RequestParam @NonNull String mail) {
         try{
             return ResponseEntity.ok(userService.getUserByMail(mail));
         } catch (Exception e){
