@@ -1,7 +1,6 @@
 package com.example.rightCity.service;
 
 import com.example.rightCity.entity.ComplainEntity;
-import com.example.rightCity.entity.UserEntity;
 import com.example.rightCity.exception.complain.ComplainNotFoundException;
 import com.example.rightCity.exception.user.UserNotFoundException;
 import com.example.rightCity.repository.ComplainRepository;
@@ -37,7 +36,7 @@ public class ComplainService {
                             complain.setUser(user);
                             saved.set(complainRepository.save(complain));
                         },
-                                ComplainNotFoundException::new
+                                UserNotFoundException::new
                         );
 
         return saved.get();
