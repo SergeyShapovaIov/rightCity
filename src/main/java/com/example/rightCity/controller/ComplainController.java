@@ -44,7 +44,7 @@ public class ComplainController {
 
 
     @GetMapping("/getComplainByID/{ID}")
-    public ResponseEntity getComplainById(@PathVariable @NonNull long ID) {
+    public ResponseEntity getComplainById(@PathVariable @NonNull Long ID) {
         try {
             return ResponseEntity.ok(complainService.getComplainById(ID));
         } catch (NoSuchElementException exception) {
