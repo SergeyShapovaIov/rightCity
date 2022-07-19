@@ -28,7 +28,7 @@ public class ComplainService {
 
 
     public ComplainEntity addComplainByUserId(ComplainEntity complain, Long userId) {
-        AtomicReference<ComplainEntity> saved = new AtomicReference<>();
+        final AtomicReference<ComplainEntity> saved = new AtomicReference<>();
 
         userRepository
                 .findById(userId)

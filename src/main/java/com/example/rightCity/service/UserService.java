@@ -27,7 +27,7 @@ public class UserService {
 
 
     public UserEntity updateUsernameById(String username, Long id) throws OldNameMatchesNewOneException {
-        AtomicReference<UserEntity> saved = new AtomicReference<>();
+        final AtomicReference<UserEntity> saved = new AtomicReference<>();
 
         userRepository
                 .findById(id)
@@ -44,7 +44,7 @@ public class UserService {
 
 
     public UserEntity updatePasswordById(String password, Long id) {
-        AtomicReference<UserEntity> saved = new AtomicReference<>();
+        final AtomicReference<UserEntity> saved = new AtomicReference<>();
 
         userRepository
                 .findById(id)
