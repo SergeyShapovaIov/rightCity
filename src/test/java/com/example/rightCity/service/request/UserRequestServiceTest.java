@@ -2,19 +2,19 @@ package com.example.rightCity.service.request;
 
 import net.bytebuddy.utility.RandomString;
 import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import org.apache.logging.log4j.LogManager;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class UserRequestServiceTest {
+
+    private final Logger logger = LogManager.getLogger(UserRequestServiceTest.class);
 
     @Test
     void sendRegistrationRequest()
@@ -28,7 +28,7 @@ class UserRequestServiceTest {
 
         String response = service.sendRegistrationRequest(testUser);
 
-        assertEquals("User added", response);
+        assertThat(response).isEqualTo("User added");
     }
 
     @Test
@@ -41,11 +41,11 @@ class UserRequestServiceTest {
 
         String response = service.sendLoginRequest(testUser);
 
-        assertEquals("Entry successful", response);
+        assertThat(response).isEqualTo("Entry successful");
     }
 
     @Test
-    void sendUpdateUsernameRequest() throws UnsupportedEncodingException {
+    void sendUpdateUsernameRequest() throws UnsupportedEncodingException, URISyntaxException {
         UserRequestService service = new UserRequestService();
         JSONObject user = new JSONObject();
         Long id = 2L;
@@ -53,30 +53,28 @@ class UserRequestServiceTest {
 
         String response = service.sendUpdateUsernameRequest(id, user);
 
-        assertEquals("Username updated", response);
+        assertThat(response).isEqualTo("Username updated");
     }
 
     @Test
-    void sendUpdatePasswordRequest() throws UnsupportedEncodingException {
+    void sendUpdatePasswordRequest() throws UnsupportedEncodingException, URISyntaxException {
         UserRequestService service = new UserRequestService();
         JSONObject user = new JSONObject();
         Long id = 2L;
         user.put("password", "newPasswordFromTest".concat(RandomString.make()));
 
-        String response = service.sendUpdatePasswordRequest(id, user);
+        String response = service.sendUpdatePasswordRequestAndGetResponseAsString(id, user);
 
-        assertEquals("Password updated", response);
+        assertThat(response).isEqualTo("Password updated");
     }
 
     @Test
     void sendGetUserByEmailRequest() throws URISyntaxException {
         UserRequestService service = new UserRequestService();
 
-        HttpResponse response = service.sendGetUserByEmailRequestAndGetResponse("ADatSQ4T@gmail.com");
-        StatusLine statusLine = mock(response.getStatusLine().getClass());
-        when(statusLine.getStatusCode()).thenReturn(200);
+        HttpResponse response = service.sendUserByEmailRequestAndGetResponse("ADatSQ4T@gmail.com");
 
-        assertEquals(200, statusLine.getStatusCode());
+        assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
     }
 
     @Test

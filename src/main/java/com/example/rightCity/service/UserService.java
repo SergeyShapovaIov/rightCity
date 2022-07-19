@@ -9,6 +9,7 @@ import com.example.rightCity.repository.UserRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class UserService {
@@ -26,38 +27,48 @@ public class UserService {
 
 
     public UserEntity updateUsernameById(String username, Long id) throws OldNameMatchesNewOneException {
-        UserEntity user = userRepo
+        AtomicReference<UserEntity> saved = new AtomicReference<>();
+
+        userRepo
                 .findById(id)
-                .orElseThrow(UserNotFoundException::new);
+                        .ifPresentOrElse(user -> {
+                            checkMatches(username, user);
+                            user.setFIO(username);
+                            saved.set(userRepo.save(user));
+                        },
+                                UserNotFoundException::new
+                        );
 
-        checkMatches(username, user);
-
-        user.setFIO(username);
-
-        return userRepo.save(user);
+        return saved.get();
     }
 
 
     public UserEntity updatePasswordById(String password, Long id) {
-        UserEntity user = userRepo
+        AtomicReference<UserEntity> saved = new AtomicReference<>();
+
+        userRepo
                 .findById(id)
-                .orElseThrow(UserNotFoundException::new);
+                .ifPresentOrElse(user -> {
+                    user.setPassword(password);
+                    saved.set(userRepo.save(user));
+                },
+                        UserNotFoundException::new
+                );
 
-        user.setPassword(password);
-
-        return userRepo.save(user);
+        return saved.get();
     }
 
     public void deleteUserById(Long id){
-        userRepo
-                .findById(id)
-                .orElseThrow(UserNotFoundException::new);
-
-        userRepo.deleteById(id);
+        userRepo.findById(id)
+                .ifPresentOrElse(
+                        user -> userRepo.deleteById(user.getID()),
+                        UserNotFoundException::new
+                );
     }
 
     public void loginByMailPassword(UserEntity user)
             throws UserNotFoundException, CombinationMailPasswordException {
+
         checkFoundByMail(user.getMail());
 
         checkPassword(user.getMail(), user.getPassword());

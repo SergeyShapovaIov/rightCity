@@ -1,6 +1,6 @@
 package com.example.rightCity.service.request;
 
-import com.sun.istack.NotNull;
+import lombok.NonNull;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,7 @@ public class RequestService {
     protected final String url = "http://192.168.1.234:8080/";
 
 
-    protected HttpPost buildPostRequest(@NotNull JSONObject body, @NotNull URI request)
+    protected HttpPost buildPostRequest(@NonNull JSONObject body, @NonNull URI request)
             throws UnsupportedEncodingException {
 
         HttpPost httpPostRequest = new HttpPost(request);
@@ -39,7 +40,7 @@ public class RequestService {
 
 
 
-    protected HttpPost buildPostRequest(@NotNull JSONObject body, @NotNull String path)
+    protected HttpPost buildPostRequest(@NonNull JSONObject body, @NonNull String path)
             throws UnsupportedEncodingException, URISyntaxException {
 
         URI uri = new URIBuilder()
@@ -56,10 +57,18 @@ public class RequestService {
     }
 
 
-    protected HttpPut buildPutRequest(@NotNull JSONObject body, @NotNull String path)
-            throws UnsupportedEncodingException {
+    protected HttpPut buildPutRequest(@NonNull JSONObject body,
+                                      @NonNull String path,
+                                      @NonNull String parameter,
+                                      @NonNull String value)
+            throws UnsupportedEncodingException, URISyntaxException {
 
-        HttpPut putRequest = new HttpPut(url.concat(path));
+        URI uri = new URIBuilder()
+                .setPath(url.concat(path))
+                .setParameter(parameter, value)
+                .build();
+
+        HttpPut putRequest = new HttpPut(uri);
         StringEntity params = new StringEntity(body.toString());
 
         putRequest.addHeader("content-type", "application/json");
@@ -69,7 +78,7 @@ public class RequestService {
     }
 
 
-    protected HttpGet buildGetRequest(@NotNull String path, @NotNull String parameter, @NotNull String value)
+    protected HttpGet buildGetRequest(@NonNull String path, @NonNull String parameter, @NonNull String value)
             throws URISyntaxException {
 
         URI uri = new URIBuilder(url.concat(path))
@@ -80,7 +89,7 @@ public class RequestService {
     }
 
 
-    protected HttpDelete buildDeleteRequest(@NotNull String path, @NotNull String parameter, @NotNull String value)
+    protected HttpDelete buildDeleteRequest(@NonNull String path, @NonNull String parameter, @NonNull String value)
             throws URISyntaxException {
 
         URI uri = new URIBuilder(url.concat(path))
@@ -91,14 +100,14 @@ public class RequestService {
     }
 
 
-    protected String getResponseFromRequestAsString(@NotNull HttpUriRequest request) {
+    protected String getResponseFromRequestAsString(@NonNull HttpUriRequest request) {
         return responseToString(getResponseFromRequest(request));
     }
 
 
-    protected HttpResponse getResponseFromRequest(@NotNull HttpUriRequest request) {
+    protected HttpResponse getResponseFromRequest(@NonNull HttpUriRequest request) {
         try {
-            @NotNull
+            @NonNull
             HttpClient client = HttpClientBuilder.create().build();
 
             return client.execute(request);
@@ -112,7 +121,7 @@ public class RequestService {
 
 
     protected String responseToString(HttpResponse response) {
-        @NotNull
+        @NonNull
         HttpEntity entity = response.getEntity();
 
         return entityToString(entity);
