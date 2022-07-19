@@ -5,30 +5,42 @@ import com.example.rightCity.entity.UserEntity;
 import com.example.rightCity.exception.complain.ComplainNotFoundException;
 import com.example.rightCity.exception.user.UserNotFoundException;
 import com.example.rightCity.repository.ComplainRepository;
-import com.example.rightCity.repository.UserRepo;
+import com.example.rightCity.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.atomic.AtomicReference;
 
+
+/**
+ * The type Complain service.
+ *
+ * TODO: test required
+ */
 @Service
 public class ComplainService {
     private final ComplainRepository complainRepository;
-    private final UserRepo userRepo;
+    private final UserRepository userRepository;
 
 
-    public ComplainService(ComplainRepository complainRepository, UserRepo userRepo) {
+    public ComplainService(ComplainRepository complainRepository, UserRepository userRepository) {
         this.complainRepository = complainRepository;
-        this.userRepo = userRepo;
+        this.userRepository = userRepository;
     }
 
 
     public ComplainEntity addComplainByUserId(ComplainEntity complain, Long userId) {
-        UserEntity user = userRepo
+        AtomicReference<ComplainEntity> saved = new AtomicReference<>();
+
+        userRepository
                 .findById(userId)
-                .orElseThrow(UserNotFoundException::new);
+                        .ifPresentOrElse(user -> {
+                            complain.setUser(user);
+                            saved.set(complainRepository.save(complain));
+                        },
+                                ComplainNotFoundException::new
+                        );
 
-        complain.setUser(user);
-
-        return complainRepository.save(complain);
+        return saved.get();
     }
 
 
@@ -42,8 +54,9 @@ public class ComplainService {
     public void deleteComplainById(Long id){
         complainRepository
                 .findById(id)
-                .orElseThrow(ComplainNotFoundException::new);
-
-        complainRepository.deleteById(id);
+                        .ifPresentOrElse(
+                                complain -> complainRepository.deleteById(complain.getID()),
+                                ComplainNotFoundException::new
+                        );
     }
 }
