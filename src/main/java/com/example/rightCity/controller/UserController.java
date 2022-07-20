@@ -30,7 +30,7 @@ public class UserController {
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(UserMessage.USER_DELETED);
+                    .body(UserMessage.USER_ADDED);
 
         } catch (UserWithMailAlreadyExistException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
