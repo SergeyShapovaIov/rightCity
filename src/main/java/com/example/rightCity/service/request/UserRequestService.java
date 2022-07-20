@@ -18,11 +18,21 @@ public class UserRequestService extends RequestService {
      * @return the response of request
      * @throws UnsupportedEncodingException the unsupported encoding exception
      */
-    public String sendRegistrationRequest(JSONObject user)
+    public String sendRegistrationRequestAndGetResponseAsString(JSONObject user)
             throws UnsupportedEncodingException, URISyntaxException {
+
         HttpPost request = buildRegistrationRequest(user);
 
         return getResponseFromRequestAsString(request);
+    }
+
+
+    public HttpResponse sendRegistrationRequestAndGetResponse(JSONObject user)
+            throws UnsupportedEncodingException, URISyntaxException {
+
+        HttpPost request = buildRegistrationRequest(user);
+
+        return getResponseFromRequest(request);
     }
 
 
@@ -30,11 +40,12 @@ public class UserRequestService extends RequestService {
      * Send login request string.
      *
      * @param user User entity key-value as JSONObject
-     * @return the response of request
+     * @return the response of request as string
      * @throws UnsupportedEncodingException the unsupported encoding exception
      */
     public String sendLoginRequest(JSONObject user)
             throws UnsupportedEncodingException, URISyntaxException {
+
         HttpPost request = buildLoginRequest(user);
 
         return getResponseFromRequestAsString(request);

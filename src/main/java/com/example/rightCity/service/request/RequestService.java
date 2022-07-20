@@ -9,13 +9,10 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONObject;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Objects;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class RequestService {

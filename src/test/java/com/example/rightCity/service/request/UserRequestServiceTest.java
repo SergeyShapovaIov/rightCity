@@ -2,6 +2,7 @@ package com.example.rightCity.service.request;
 
 import net.bytebuddy.utility.RandomString;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -26,9 +27,9 @@ class UserRequestServiceTest {
         testUser.put("password", RandomString.make().concat("PASSWORD"));
         testUser.put("mail", RandomString.make().concat("@gmail.com"));
 
-        String response = service.sendRegistrationRequest(testUser);
+        HttpResponse response = service.sendRegistrationRequestAndGetResponse(testUser);
 
-        assertThat(response).isEqualTo("User added");
+        assertThat(response.getStatusLine().getStatusCode()).isEqualTo(HttpStatus.SC_CREATED);
     }
 
     @Test

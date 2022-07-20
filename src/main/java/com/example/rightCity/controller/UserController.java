@@ -6,7 +6,9 @@ import com.example.rightCity.exception.user.OldNameMatchesNewOneException;
 import com.example.rightCity.exception.user.UserNotFoundException;
 import com.example.rightCity.exception.user.UserWithMailAlreadyExistException;
 import com.example.rightCity.service.UserService;
+import com.example.rightCity.util.UserMessage;
 import lombok.NonNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,11 +24,13 @@ public class UserController {
 
 
     @PostMapping("/registration")
-    public ResponseEntity addUser(@RequestBody @NonNull UserEntity user){
+    public ResponseEntity<?> addUser(@RequestBody @NonNull UserEntity user){
         try {
             userService.registration(user);
 
-            return ResponseEntity.ok("User added");
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(UserMessage.USER_DELETED);
 
         } catch (UserWithMailAlreadyExistException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -40,27 +44,35 @@ public class UserController {
 
 
     @PostMapping ("/login")
-    public ResponseEntity loginByMailPassword(@RequestBody @NonNull UserEntity user) {
-        try{
+    public ResponseEntity<?> loginByMailPassword(@RequestBody @NonNull UserEntity user) {
+        try {
             userService.loginByMailPassword(user);
 
-            return ResponseEntity.ok("Entry successful");
+            return ResponseEntity.ok(UserMessage.ENTRY_SUCCESSFUL);
 
-        } catch (UserNotFoundException | CombinationMailPasswordException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body("Service error!");
+        } catch (UserNotFoundException e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        } catch (CombinationMailPasswordException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Something went wrong...");
         }
     }
 
 
     @PutMapping("/updateUsername")
-    public ResponseEntity updateUsernameUserById(@RequestBody @NonNull UserEntity user,
+    public ResponseEntity<?> updateUsernameUserById(@RequestBody @NonNull UserEntity user,
                                                  @RequestParam @NonNull Long ID) {
         try{
             userService.updateUsernameById(user.getFIO(), ID);
 
-            return ResponseEntity.ok("Username updated");
+            return ResponseEntity.accepted().body(UserMessage.USERNAME_UPDATED);
 
         } catch (OldNameMatchesNewOneException e){
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -72,12 +84,12 @@ public class UserController {
 
 
     @PutMapping ("/updatePassword")
-    public ResponseEntity updatePasswordById(@RequestBody @NonNull UserEntity user,
+    public ResponseEntity<?> updatePasswordById(@RequestBody @NonNull UserEntity user,
                                              @RequestParam @NonNull Long ID) {
         try{
             userService.updatePasswordById(user.getPassword(), ID);
 
-            return ResponseEntity.ok("Password updated");
+            return ResponseEntity.ok(UserMessage.PASSWORD_UPDATED);
 
         }catch (Exception e){
             return ResponseEntity.badRequest().body("Error!");
@@ -86,11 +98,11 @@ public class UserController {
 
 
     @DeleteMapping("/{ID}")
-    public ResponseEntity deleteUserById(@PathVariable @NonNull Long ID) {
+    public ResponseEntity<?> deleteUserById(@PathVariable @NonNull Long ID) {
         try {
             userService.deleteUserById(ID);
 
-            return ResponseEntity.ok("User deleted");
+            return ResponseEntity.ok(UserMessage.USER_DELETED);
 
         } catch (Exception e){
             return ResponseEntity.badRequest().body("Delete error!");
@@ -99,7 +111,7 @@ public class UserController {
 
 
     @GetMapping("/getUserByMail")
-    public ResponseEntity getUserByMail(@RequestParam @NonNull String mail) {
+    public ResponseEntity<?> getUserByMail(@RequestParam @NonNull String mail) {
         try{
             return ResponseEntity.ok(userService.getUserByMail(mail));
         } catch (Exception e){
