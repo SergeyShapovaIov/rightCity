@@ -19,8 +19,21 @@ dependencies {
 	// json java
 	implementation 'org.json:json:20220320'
     implementation 'junit:junit:4.13.2'
+// logging
+	implementation 'org.apache.logging.log4j:log4j-api:2.18.0'
+	implementation 'org.apache.logging.log4j:log4j-core:2.18.0'
 
-    runtimeOnly 'mysql:mysql-connector-java'
+
+	compileOnly 'org.projectlombok:lombok:1.18.24'
+	annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+	testCompileOnly 'org.projectlombok:lombok:1.18.24'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+	// https://mvnrepository.com/artifact/org.mockito/mockito-core
+	testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.1.0'
+	testImplementation('org.assertj:assertj-core:3.23.1')
+
+	runtimeOnly 'mysql:mysql-connector-java'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

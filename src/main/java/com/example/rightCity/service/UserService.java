@@ -1,100 +1,111 @@
 package com.example.rightCity.service;
 
 import com.example.rightCity.entity.UserEntity;
-import com.example.rightCity.exception.CombinationMailPasswordException;
-import com.example.rightCity.exception.OldNameMatchesNewNameException;
-import com.example.rightCity.exception.UserNotFoundException;
-import com.example.rightCity.exception.UserWithMailAlreadyExistException;
-import com.example.rightCity.repository.UserRepo;
+import com.example.rightCity.exception.user.CombinationMailPasswordException;
+import com.example.rightCity.exception.user.OldNameMatchesNewOneException;
+import com.example.rightCity.exception.user.UserNotFoundException;
+import com.example.rightCity.exception.user.UserWithMailAlreadyExistException;
+import com.example.rightCity.repository.UserRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class UserService {
-    private final UserRepo userRepo;
+    private final UserRepository userRepository;
 
-    public UserService(UserRepo userRepo) {
-        this.userRepo = userRepo;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public UserEntity registration (UserEntity user) throws UserWithMailAlreadyExistException {
         checkPresent(user);
 
-        return userRepo.save(user);
+        return userRepository.save(user);
     }
 
 
-    public UserEntity updateUsernameById(String username, Long id) throws OldNameMatchesNewNameException {
-        UserEntity user = userRepo
+    public UserEntity updateUsernameById(String username, Long id) throws OldNameMatchesNewOneException {
+        final AtomicReference<UserEntity> saved = new AtomicReference<>();
+
+        userRepository
                 .findById(id)
-                .orElseThrow(NoSuchElementException::new);
+                        .ifPresentOrElse(user -> {
+                            checkMatches(username, user);
+                            user.setFIO(username);
+                            saved.set(userRepository.save(user));
+                        },
+                                UserNotFoundException::new
+                        );
 
-        checkMatches(username, user);
-
-        user.setFIO(username);
-
-        return userRepo.save(user);
+        return saved.get();
     }
 
 
-    public UserEntity updatePasswordByID (String password, Long id) {
-        UserEntity user = userRepo
+    public UserEntity updatePasswordById(String password, Long id) {
+        final AtomicReference<UserEntity> saved = new AtomicReference<>();
+
+        userRepository
                 .findById(id)
-                .orElseThrow(NoSuchElementException::new);
+                .ifPresentOrElse(user -> {
+                    user.setPassword(password);
+                    saved.set(userRepository.save(user));
+                },
+                        UserNotFoundException::new
+                );
 
-        user.setPassword(password);
-
-        return userRepo.save(user);
+        return saved.get();
     }
 
-    public void deleteUserByID(Long id){
-        userRepo
-                .findById(id)
-                .orElseThrow(NoSuchElementException::new);
-
-        userRepo.deleteById(id);
+    public void deleteUserById(Long id){
+        userRepository.findById(id)
+                .ifPresentOrElse(
+                        user -> userRepository.deleteById(user.getID()),
+                        UserNotFoundException::new
+                );
     }
 
-    public void loginByMailPassword(UserEntity user) throws UserNotFoundException, CombinationMailPasswordException {
+    public void loginByMailPassword(UserEntity user)
+            throws UserNotFoundException, CombinationMailPasswordException {
+
         checkFoundByMail(user.getMail());
 
-        checkCombinationMailPassword(user.getMail(), user.getPassword());
+        checkPassword(user.getMail(), user.getPassword());
     }
-
 
 
     public UserEntity getUserByMail(String mail) throws UserNotFoundException {
         checkFoundByMail(mail);
 
-        return userRepo.findByMail(mail);
+        return userRepository.findByMail(mail);
     }
 
+
     private void checkFoundByMail(String mail) throws UserNotFoundException {
-        if(userRepo.findByMail(mail) == null){
-            throw new UserNotFoundException("No user with this email was found");
+        if(Objects.equals(userRepository.findByMail(mail), null)) {
+            throw new UserNotFoundException();
         }
     }
 
 
     private void checkPresent(UserEntity user) throws UserWithMailAlreadyExistException {
-        if(userRepo.findByMail(user.getMail()) != null){
-            throw new UserWithMailAlreadyExistException("User with this email is already exist!");
+        if(!Objects.equals(userRepository.findByMail(user.getMail()), null)) {
+            throw new UserWithMailAlreadyExistException();
         }
     }
 
 
-    private void checkMatches(String username, UserEntity user) throws OldNameMatchesNewNameException {
+    private void checkMatches(String username, UserEntity user) throws OldNameMatchesNewOneException {
         if(Objects.equals(user.getFIO(), username)) {
-            throw new OldNameMatchesNewNameException("The old name matches the new name");
+            throw new OldNameMatchesNewOneException();
         }
     }
 
-    private void checkCombinationMailPassword (String mail, String password) throws CombinationMailPasswordException {
-        if(!Objects.equals(userRepo.findByMail(mail).getPassword(), password)){
-            throw new CombinationMailPasswordException("Incorrect user/password combination");
+
+    private void checkPassword(String mail, String password) throws CombinationMailPasswordException {
+        if(!Objects.equals(userRepository.findByMail(mail).getPassword(), password)) {
+            throw new CombinationMailPasswordException();
         }
     }
 }

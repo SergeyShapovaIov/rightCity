@@ -1,18 +1,25 @@
-package com.example.rightCity.service;
+package com.example.rightCity.service.request;
 
 import net.bytebuddy.utility.RandomString;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import org.apache.logging.log4j.LogManager;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class UserRequestServiceTest {
 
+    private final Logger logger = LogManager.getLogger(UserRequestServiceTest.class);
+
     @Test
-    void sendRegistrationRequest() throws UnsupportedEncodingException {
+    void sendRegistrationRequest()
+            throws UnsupportedEncodingException, URISyntaxException {
         UserRequestService service = new UserRequestService();
         JSONObject testUser = new JSONObject();
 
@@ -20,13 +27,13 @@ class UserRequestServiceTest {
         testUser.put("password", RandomString.make().concat("PASSWORD"));
         testUser.put("mail", RandomString.make().concat("@gmail.com"));
 
-        String response = service.sendRegistrationRequest(testUser);
+        HttpResponse response = service.sendRegistrationRequestAndGetResponse(testUser);
 
-        assertEquals("User added", response);
+        assertThat(response.getStatusLine().getStatusCode()).isEqualTo(HttpStatus.SC_CREATED);
     }
 
     @Test
-    void sendLoginRequest() throws UnsupportedEncodingException {
+    void sendLoginRequest() throws UnsupportedEncodingException, URISyntaxException {
         UserRequestService service = new UserRequestService();
         JSONObject testUser = new JSONObject();
 
@@ -35,11 +42,11 @@ class UserRequestServiceTest {
 
         String response = service.sendLoginRequest(testUser);
 
-        assertEquals("Entry successful", response);
+        assertThat(response).isEqualTo("Entry successful");
     }
 
     @Test
-    void sendUpdateUsernameRequest() throws UnsupportedEncodingException {
+    void sendUpdateUsernameRequest() throws UnsupportedEncodingException, URISyntaxException {
         UserRequestService service = new UserRequestService();
         JSONObject user = new JSONObject();
         Long id = 2L;
@@ -47,36 +54,31 @@ class UserRequestServiceTest {
 
         String response = service.sendUpdateUsernameRequest(id, user);
 
-        assertEquals("Username updated", response);
+        assertThat(response).isEqualTo("Username updated");
     }
 
     @Test
-    void sendUpdatePasswordRequest() throws UnsupportedEncodingException {
+    void sendUpdatePasswordRequest() throws UnsupportedEncodingException, URISyntaxException {
         UserRequestService service = new UserRequestService();
         JSONObject user = new JSONObject();
         Long id = 2L;
         user.put("password", "newPasswordFromTest".concat(RandomString.make()));
 
-        String response = service.sendUpdatePasswordRequest(id, user);
+        String response = service.sendUpdatePasswordRequestAndGetResponseAsString(id, user);
 
-        assertEquals("Password updated", response);
+        assertThat(response).isEqualTo("Password updated");
     }
 
     @Test
     void sendGetUserByEmailRequest() throws URISyntaxException {
         UserRequestService service = new UserRequestService();
 
-        String response = service.sendGetUserByEmailRequest("ADatSQ4T@gmail.com");
+        HttpResponse response = service.sendUserByEmailRequestAndGetResponse("ADatSQ4T@gmail.com");
 
-        JSONObject expected = new JSONObject();
+        assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
+    }
 
-        expected.put("fio", "hlGZdsYfFIO");
-        expected.put("mail", "ADatSQ4T@gmail.com");
-        expected.put("id", 24);
-        expected.put("password", "JUHSWAk6PASSWORD");
-
-        JSONObject actual = new JSONObject(response);
-
-        assertEquals(expected.toString(), actual.toString());
+    @Test
+    void sendDeleteUserByIdRequest() {
     }
 }

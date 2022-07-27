@@ -2,8 +2,11 @@ package com.example.rightCity.controller;
 
 import com.example.rightCity.entity.ComplainEntity;
 import com.example.rightCity.service.ComplainService;
+import lombok.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/complain")
@@ -16,25 +19,39 @@ public class ComplainController {
     }
 
     @PostMapping("/addComplainByID")
-    public ResponseEntity addComplainByID(@RequestBody ComplainEntity complain,
-                                      @RequestParam Long userId){
+    public ResponseEntity addComplainByUserID(@RequestBody @NonNull ComplainEntity complain,
+                                              @RequestParam @NonNull Long userId){
         try {
-            complainService.addComplainByUserId(complain,userId);
+            complainService.addComplainByUserId(complain, userId);
+
             return ResponseEntity.ok("Complain added");
         } catch ( Exception e) {
             return ResponseEntity.badRequest().body("Error!");
         }
     }
 
+
     @DeleteMapping("/{ID}")
-    public ResponseEntity deleteComplainById(@PathVariable Long ID){
+    public ResponseEntity deleteComplainById(@PathVariable @NonNull Long ID) {
         try{
             complainService.deleteComplainById(ID);
-            return ResponseEntity.ok("Complain added");
+
+            return ResponseEntity.ok("Complain deleted");
         } catch (Exception e){
             return ResponseEntity.badRequest().body("Delete error");
         }
     }
 
+
+    @GetMapping("/getComplainByID/{ID}")
+    public ResponseEntity getComplainById(@PathVariable @NonNull Long ID) {
+        try {
+            return ResponseEntity.ok(complainService.getComplainById(ID));
+        } catch (NoSuchElementException exception) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
+    }
 }
 
