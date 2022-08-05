@@ -20,15 +20,17 @@ public class UserService {
     }
 
     public UserEntity registration (UserEntity user) throws UserWithMailAlreadyExistException {
-        checkPresent(user);
-
+        userRepository
+            .findById(user.getID())
+            .ifPresent(u -> {
+                throw new UserWithMailAlreadyExistException();
+            });
         return userRepository.save(user);
     }
 
 
     public UserEntity updateUsernameById(String username, Long id) throws OldNameMatchesNewOneException {
         final AtomicReference<UserEntity> saved = new AtomicReference<>();
-
         userRepository
                 .findById(id)
                         .ifPresentOrElse(user -> {
@@ -38,14 +40,12 @@ public class UserService {
                         },
                                 UserNotFoundException::new
                         );
-
         return saved.get();
     }
 
 
     public UserEntity updatePasswordById(String password, Long id) {
         final AtomicReference<UserEntity> saved = new AtomicReference<>();
-
         userRepository
                 .findById(id)
                 .ifPresentOrElse(user -> {
@@ -72,7 +72,7 @@ public class UserService {
         userRepository
             .findById(user.getID())
             .ifPresentOrElse(
-                u -> this.checkPassword(u.getMail(), u.getPassword()),
+                this::checkPassword,
                 UserNotFoundException::new
             );
     }
@@ -83,27 +83,10 @@ public class UserService {
         userRepository
             .findByMail(mail)
                 .ifPresentOrElse(
-                    u -> {
-                        this.checkFoundByMail(u.getMail());
-                        user.set(u);
-                    },
+                    user::set,
                     UserNotFoundException::new
                 );
         return user.get();
-    }
-
-
-    private void checkFoundByMail(String mail) throws UserNotFoundException {
-        if(Objects.equals(userRepository.findByMail(mail), null)) {
-            throw new UserNotFoundException();
-        }
-    }
-
-
-    private void checkPresent(UserEntity user) throws UserWithMailAlreadyExistException {
-        if(!Objects.equals(userRepository.findByMail(user.getMail()), null)) {
-            throw new UserWithMailAlreadyExistException();
-        }
     }
 
 
@@ -114,9 +97,8 @@ public class UserService {
     }
 
 
-    private void checkPassword(String mail, String password) throws CombinationMailPasswordException {
-        this.checkFoundByMail(mail);
-        if(!Objects.equals(userRepository.findByMail(mail).orElseThrow().getPassword(), password)) {
+    private void checkPassword(UserEntity user) throws CombinationMailPasswordException {
+        if(!Objects.equals(userRepository.findByMail(user.getMail()).orElseThrow().getPassword(), user.getPassword())) {
             throw new CombinationMailPasswordException();
         }
     }
