@@ -31,7 +31,6 @@ public class UserController {
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body(UserMessage.USER_ADDED);
-
         } catch (UserWithMailAlreadyExistException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (NullPointerException e) {
@@ -39,7 +38,6 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error!");
         }
-
     }
 
 
@@ -51,9 +49,7 @@ public class UserController {
     public ResponseEntity<?> loginByMailPassword(@RequestBody @NonNull UserEntity user) {
         try {
             userService.loginByMailPassword(user);
-
             return ResponseEntity.ok(UserMessage.ENTRY_SUCCESSFUL);
-
         } catch (UserNotFoundException e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -75,9 +71,7 @@ public class UserController {
                                                  @RequestParam @NonNull Long ID) {
         try{
             userService.updateUsernameById(user.getFIO(), ID);
-
             return ResponseEntity.accepted().body(UserMessage.USERNAME_UPDATED);
-
         } catch (OldNameMatchesNewOneException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -92,9 +86,7 @@ public class UserController {
                                              @RequestParam @NonNull Long ID) {
         try{
             userService.updatePasswordById(user.getPassword(), ID);
-
             return ResponseEntity.ok(UserMessage.PASSWORD_UPDATED);
-
         }catch (Exception e){
             return ResponseEntity.badRequest().body("Error!");
         }
@@ -105,9 +97,7 @@ public class UserController {
     public ResponseEntity<?> deleteUserById(@PathVariable @NonNull Long ID) {
         try {
             userService.deleteUserById(ID);
-
             return ResponseEntity.ok(UserMessage.USER_DELETED);
-
         } catch (Exception e){
             return ResponseEntity.badRequest().body("Delete error!");
         }

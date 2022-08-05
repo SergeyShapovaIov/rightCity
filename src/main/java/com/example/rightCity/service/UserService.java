@@ -67,14 +67,19 @@ public class UserService {
                 );
     }
 
-    public void loginByMailPassword(UserEntity user)
+    public UserEntity loginByMailPassword(UserEntity user)
             throws UserNotFoundException, CombinationMailPasswordException {
+        AtomicReference<UserEntity> ref = new AtomicReference<>();
         userRepository
             .findById(user.getID())
             .ifPresentOrElse(
-                this::checkPassword,
+                u -> {
+                    checkPassword(u);
+                    ref.set(u);
+                },
                 UserNotFoundException::new
             );
+        return ref.get();
     }
 
 
