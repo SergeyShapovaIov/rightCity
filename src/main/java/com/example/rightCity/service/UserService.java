@@ -29,13 +29,13 @@ public class UserService {
     }
 
 
-    public UserEntity updateUsernameById(String username, Long id) throws OldNameMatchesNewOneException {
+    public UserEntity updateUsernameById(String updatedUsername, Long id) throws OldNameMatchesNewOneException {
         final AtomicReference<UserEntity> saved = new AtomicReference<>();
         userRepository
                 .findById(id)
                         .ifPresentOrElse(user -> {
-                            checkMatches(username, user);
-                            user.setFIO(username);
+                            checkMatches(updatedUsername, user);
+                            user.setFIO(updatedUsername);
                             saved.set(userRepository.save(user));
                         },
                                 UserNotFoundException::new
@@ -90,8 +90,8 @@ public class UserService {
     }
 
 
-    private void checkMatches(String username, UserEntity user) throws OldNameMatchesNewOneException {
-        if(Objects.equals(user.getFIO(), username)) {
+    private void checkMatches(String updatedUsername, UserEntity user) throws OldNameMatchesNewOneException {
+        if(Objects.equals(user.getFIO(), updatedUsername)) {
             throw new OldNameMatchesNewOneException();
         }
     }
