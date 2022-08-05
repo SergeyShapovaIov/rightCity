@@ -2,7 +2,7 @@ package com.example.rightCity.controller;
 
 import com.example.rightCity.entity.ComplainEntity;
 import com.example.rightCity.service.ComplainService;
-import com.example.rightCity.util.ComplainMessage;
+import com.example.rightCity.message.ComplainMessage;
 import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

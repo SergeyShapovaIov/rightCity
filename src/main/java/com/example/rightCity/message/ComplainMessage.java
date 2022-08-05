@@ -1,4 +1,4 @@
-package com.example.rightCity.util;
+package com.example.rightCity.message;
 
 public class ComplainMessage {
     public static final String COMPLAIN_ADDED = "Complain added";

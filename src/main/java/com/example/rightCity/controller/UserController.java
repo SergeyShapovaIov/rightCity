@@ -6,7 +6,7 @@ import com.example.rightCity.exception.user.OldNameMatchesNewOneException;
 import com.example.rightCity.exception.user.UserNotFoundException;
 import com.example.rightCity.exception.user.UserWithMailAlreadyExistException;
 import com.example.rightCity.service.UserService;
-import com.example.rightCity.util.UserMessage;
+import com.example.rightCity.message.UserMessage;
 import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

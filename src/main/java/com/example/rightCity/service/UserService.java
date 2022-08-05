@@ -59,7 +59,8 @@ public class UserService {
     }
 
     public void deleteUserById(Long id){
-        userRepository.findById(id)
+        userRepository
+            .findById(id)
                 .ifPresentOrElse(
                         user -> userRepository.deleteById(user.getID()),
                         UserNotFoundException::new
@@ -68,17 +69,27 @@ public class UserService {
 
     public void loginByMailPassword(UserEntity user)
             throws UserNotFoundException, CombinationMailPasswordException {
-
-        checkFoundByMail(user.getMail());
-
-        checkPassword(user.getMail(), user.getPassword());
+        userRepository
+            .findById(user.getID())
+            .ifPresentOrElse(
+                u -> this.checkPassword(u.getMail(), u.getPassword()),
+                UserNotFoundException::new
+            );
     }
 
 
     public UserEntity getUserByMail(String mail) throws UserNotFoundException {
-        checkFoundByMail(mail);
-
-        return userRepository.findByMail(mail);
+        AtomicReference<UserEntity> user = new AtomicReference<>();
+        userRepository
+            .findByMail(mail)
+                .ifPresentOrElse(
+                    u -> {
+                        this.checkFoundByMail(u.getMail());
+                        user.set(u);
+                    },
+                    UserNotFoundException::new
+                );
+        return user.get();
     }
 
 
@@ -104,7 +115,8 @@ public class UserService {
 
 
     private void checkPassword(String mail, String password) throws CombinationMailPasswordException {
-        if(!Objects.equals(userRepository.findByMail(mail).getPassword(), password)) {
+        this.checkFoundByMail(mail);
+        if(!Objects.equals(userRepository.findByMail(mail).orElseThrow().getPassword(), password)) {
             throw new CombinationMailPasswordException();
         }
     }
