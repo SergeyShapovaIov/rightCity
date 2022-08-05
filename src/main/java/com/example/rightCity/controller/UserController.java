@@ -43,6 +43,10 @@ public class UserController {
     }
 
 
+    /*
+    * ! method written completely wrong, in response we have to
+    * ! send authorized user data in body, TODO: must refactor
+    * */
     @PostMapping ("/login")
     public ResponseEntity<?> loginByMailPassword(@RequestBody @NonNull UserEntity user) {
         try {
