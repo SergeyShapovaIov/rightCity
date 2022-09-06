@@ -1,4 +1,4 @@
-package com.example.rightCity.util;
+package com.example.rightCity.message;
 
 public class UserMessage {
     public static final String USER_ADDED = "User added";

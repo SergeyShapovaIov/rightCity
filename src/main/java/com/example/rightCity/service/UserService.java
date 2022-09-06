@@ -20,32 +20,32 @@ public class UserService {
     }
 
     public UserEntity registration (UserEntity user) throws UserWithMailAlreadyExistException {
-        checkPresent(user);
-
+        userRepository
+            .findById(user.getID())
+            .ifPresent(u -> {
+                throw new UserWithMailAlreadyExistException();
+            });
         return userRepository.save(user);
     }
 
 
-    public UserEntity updateUsernameById(String username, Long id) throws OldNameMatchesNewOneException {
+    public UserEntity updateUsernameById(String updatedUsername, Long id) throws OldNameMatchesNewOneException {
         final AtomicReference<UserEntity> saved = new AtomicReference<>();
-
         userRepository
                 .findById(id)
                         .ifPresentOrElse(user -> {
-                            checkMatches(username, user);
-                            user.setFIO(username);
+                            checkMatches(updatedUsername, user);
+                            user.setFIO(updatedUsername);
                             saved.set(userRepository.save(user));
                         },
                                 UserNotFoundException::new
                         );
-
         return saved.get();
     }
 
 
     public UserEntity updatePasswordById(String password, Long id) {
         final AtomicReference<UserEntity> saved = new AtomicReference<>();
-
         userRepository
                 .findById(id)
                 .ifPresentOrElse(user -> {
@@ -59,52 +59,51 @@ public class UserService {
     }
 
     public void deleteUserById(Long id){
-        userRepository.findById(id)
+        userRepository
+            .findById(id)
                 .ifPresentOrElse(
                         user -> userRepository.deleteById(user.getID()),
                         UserNotFoundException::new
                 );
     }
 
-    public void loginByMailPassword(UserEntity user)
+    public UserEntity loginByMailPassword(UserEntity user)
             throws UserNotFoundException, CombinationMailPasswordException {
-
-        checkFoundByMail(user.getMail());
-
-        checkPassword(user.getMail(), user.getPassword());
+        AtomicReference<UserEntity> ref = new AtomicReference<>();
+        userRepository
+            .findById(user.getID())
+            .ifPresentOrElse(
+                u -> {
+                    checkPassword(u);
+                    ref.set(u);
+                },
+                UserNotFoundException::new
+            );
+        return ref.get();
     }
 
 
     public UserEntity getUserByMail(String mail) throws UserNotFoundException {
-        checkFoundByMail(mail);
-
-        return userRepository.findByMail(mail);
+        AtomicReference<UserEntity> user = new AtomicReference<>();
+        userRepository
+            .findByMail(mail)
+                .ifPresentOrElse(
+                    user::set,
+                    UserNotFoundException::new
+                );
+        return user.get();
     }
 
 
-    private void checkFoundByMail(String mail) throws UserNotFoundException {
-        if(Objects.equals(userRepository.findByMail(mail), null)) {
-            throw new UserNotFoundException();
-        }
-    }
-
-
-    private void checkPresent(UserEntity user) throws UserWithMailAlreadyExistException {
-        if(!Objects.equals(userRepository.findByMail(user.getMail()), null)) {
-            throw new UserWithMailAlreadyExistException();
-        }
-    }
-
-
-    private void checkMatches(String username, UserEntity user) throws OldNameMatchesNewOneException {
-        if(Objects.equals(user.getFIO(), username)) {
+    private void checkMatches(String updatedUsername, UserEntity user) throws OldNameMatchesNewOneException {
+        if(Objects.equals(user.getFIO(), updatedUsername)) {
             throw new OldNameMatchesNewOneException();
         }
     }
 
 
-    private void checkPassword(String mail, String password) throws CombinationMailPasswordException {
-        if(!Objects.equals(userRepository.findByMail(mail).getPassword(), password)) {
+    private void checkPassword(UserEntity user) throws CombinationMailPasswordException {
+        if(!Objects.equals(userRepository.findByMail(user.getMail()).orElseThrow().getPassword(), user.getPassword())) {
             throw new CombinationMailPasswordException();
         }
     }
